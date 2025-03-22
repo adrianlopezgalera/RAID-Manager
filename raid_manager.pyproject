@@ -1,0 +1,8 @@
+{
+    "files": [
+        "raid_manager.py",
+        "__init__.py",
+        "UI/main.ui",
+        "UI/new_raid.ui"
+    ]
+}
