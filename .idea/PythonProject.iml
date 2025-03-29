@@ -4,7 +4,9 @@
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/.qtcreator" />
       <excludeFolder url="file://$MODULE_DIR$/.venv" />
+      <excludeFolder url="file://$MODULE_DIR$/.qtcreator/Python_3_12_3venv" />
     </content>
+    <content url="file://$MODULE_DIR$/.qtcreator/Python_3_12_3venv" />
     <orderEntry type="jdk" jdkName="Python 3.12 virtualenv at ~/Documentos/Contenido propio/Materias/Mis programas/Pruebas de Python/RAID Manager/.venv" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>

@@ -1,10 +1,13 @@
 import subprocess
 
-from PySide6.QtWidgets import QFileDialog
-
-
 class EventsManager:
 
+    @staticmethod
+    def run_command(command):
+        try:
+            subprocess.run(command, shell=True)
+        except subprocess.CalledProcessError as e:
+            print(f"Error executing the command: {e}")
     @staticmethod
     def read_output(command):
         try:
@@ -20,10 +23,3 @@ class EventsManager:
     @staticmethod
     def action(**kwargs):
         subprocess.run('mdadm ' + kwargs)
-
-    @staticmethod
-    def select_devices():
-        dialog = QFileDialog()
-        dialog.setFileMode(QFileDialog.FileMode.Directory)
-        dialog.setOption(QFileDialog.Option.ShowDirsOnly, True)
-        return str(QFileDialog.getExistingDirectory(dialog, "Select Directory"))

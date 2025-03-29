@@ -17,7 +17,7 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QComboBox, QFormLayout, QLabel,
     QLayout, QLineEdit, QPushButton, QSizePolicy,
-    QTextBrowser, QToolButton, QWidget)
+    QToolButton, QWidget)
 
 class Ui_New_Raid(object):
     def setupUi(self, New_Raid):
@@ -34,60 +34,59 @@ class Ui_New_Raid(object):
         self.formLayout.setHorizontalSpacing(6)
         self.formLayout.setVerticalSpacing(20)
         self.formLayout.setContentsMargins(0, 0, 0, 0)
-        self.label = QLabel(self.formLayoutWidget)
-        self.label.setObjectName(u"label")
+        self.raid_name_label = QLabel(self.formLayoutWidget)
+        self.raid_name_label.setObjectName(u"raid_name_label")
 
-        self.formLayout.setWidget(0, QFormLayout.LabelRole, self.label)
+        self.formLayout.setWidget(0, QFormLayout.LabelRole, self.raid_name_label)
 
-        self.lineEdit = QLineEdit(self.formLayoutWidget)
-        self.lineEdit.setObjectName(u"lineEdit")
+        self.raid_name = QLineEdit(self.formLayoutWidget)
+        self.raid_name.setObjectName(u"raid_name")
 
-        self.formLayout.setWidget(0, QFormLayout.FieldRole, self.lineEdit)
+        self.formLayout.setWidget(0, QFormLayout.FieldRole, self.raid_name)
 
-        self.rAIDLevelLabel = QLabel(self.formLayoutWidget)
-        self.rAIDLevelLabel.setObjectName(u"rAIDLevelLabel")
+        self.raid_Level_Llabel = QLabel(self.formLayoutWidget)
+        self.raid_Level_Llabel.setObjectName(u"raid_Level_Llabel")
 
-        self.formLayout.setWidget(1, QFormLayout.LabelRole, self.rAIDLevelLabel)
+        self.formLayout.setWidget(1, QFormLayout.LabelRole, self.raid_Level_Llabel)
 
-        self.rAIDLevelComboBox = QComboBox(self.formLayoutWidget)
-        self.rAIDLevelComboBox.addItem("")
-        self.rAIDLevelComboBox.addItem("")
-        self.rAIDLevelComboBox.addItem("")
-        self.rAIDLevelComboBox.addItem("")
-        self.rAIDLevelComboBox.setObjectName(u"rAIDLevelComboBox")
+        self.raid_level = QComboBox(self.formLayoutWidget)
+        self.raid_level.addItem("")
+        self.raid_level.addItem("")
+        self.raid_level.addItem("")
+        self.raid_level.addItem("")
+        self.raid_level.setObjectName(u"raid_level")
 
-        self.formLayout.setWidget(1, QFormLayout.FieldRole, self.rAIDLevelComboBox)
+        self.formLayout.setWidget(1, QFormLayout.FieldRole, self.raid_level)
 
-        self.selectDevicesLabel = QLabel(self.formLayoutWidget)
-        self.selectDevicesLabel.setObjectName(u"selectDevicesLabel")
+        self.select_devices_label = QLabel(self.formLayoutWidget)
+        self.select_devices_label.setObjectName(u"select_devices_label")
 
-        self.formLayout.setWidget(2, QFormLayout.LabelRole, self.selectDevicesLabel)
+        self.formLayout.setWidget(2, QFormLayout.LabelRole, self.select_devices_label)
 
-        self.toolButton = QToolButton(self.formLayoutWidget)
-        self.toolButton.setObjectName(u"toolButton")
+        self.select_devices = QToolButton(self.formLayoutWidget)
+        self.select_devices.setObjectName(u"select_devices")
 
-        self.formLayout.setWidget(2, QFormLayout.FieldRole, self.toolButton)
+        self.formLayout.setWidget(2, QFormLayout.FieldRole, self.select_devices)
 
-        self.textBrowser = QTextBrowser(self.formLayoutWidget)
-        self.textBrowser.setObjectName(u"textBrowser")
-        sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Ignored)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.textBrowser.sizePolicy().hasHeightForWidth())
-        self.textBrowser.setSizePolicy(sizePolicy)
-        self.textBrowser.setMaximumSize(QSize(500, 100))
+        self.devices_path = QLabel(self.formLayoutWidget)
+        self.devices_path.setObjectName(u"devices_path")
 
-        self.formLayout.setWidget(3, QFormLayout.FieldRole, self.textBrowser)
+        self.formLayout.setWidget(3, QFormLayout.FieldRole, self.devices_path)
 
-        self.pushButton_create = QPushButton(New_Raid)
-        self.pushButton_create.setObjectName(u"pushButton_create")
-        self.pushButton_create.setGeometry(QRect(590, 440, 80, 23))
+        self.remove_devices = QPushButton(self.formLayoutWidget)
+        self.remove_devices.setObjectName(u"remove_devices")
+
+        self.formLayout.setWidget(4, QFormLayout.FieldRole, self.remove_devices)
+
+        self.new_raid_create = QPushButton(New_Raid)
+        self.new_raid_create.setObjectName(u"new_raid_create")
+        self.new_raid_create.setGeometry(QRect(590, 440, 80, 23))
         font = QFont()
         font.setBold(False)
-        self.pushButton_create.setFont(font)
-        self.pushButton_cancel = QPushButton(New_Raid)
-        self.pushButton_cancel.setObjectName(u"pushButton_cancel")
-        self.pushButton_cancel.setGeometry(QRect(500, 440, 80, 23))
+        self.new_raid_create.setFont(font)
+        self.new_raid_cancel = QPushButton(New_Raid)
+        self.new_raid_cancel.setObjectName(u"new_raid_cancel")
+        self.new_raid_cancel.setGeometry(QRect(500, 440, 80, 23))
 
         self.retranslateUi(New_Raid)
 
@@ -96,16 +95,18 @@ class Ui_New_Raid(object):
 
     def retranslateUi(self, New_Raid):
         New_Raid.setWindowTitle(QCoreApplication.translate("New_Raid", u"Form", None))
-        self.label.setText(QCoreApplication.translate("New_Raid", u"RAID Name:", None))
-        self.rAIDLevelLabel.setText(QCoreApplication.translate("New_Raid", u"RAID Level:", None))
-        self.rAIDLevelComboBox.setItemText(0, QCoreApplication.translate("New_Raid", u"0", None))
-        self.rAIDLevelComboBox.setItemText(1, QCoreApplication.translate("New_Raid", u"1", None))
-        self.rAIDLevelComboBox.setItemText(2, QCoreApplication.translate("New_Raid", u"5", None))
-        self.rAIDLevelComboBox.setItemText(3, QCoreApplication.translate("New_Raid", u"6", None))
+        self.raid_name_label.setText(QCoreApplication.translate("New_Raid", u"RAID Name:", None))
+        self.raid_Level_Llabel.setText(QCoreApplication.translate("New_Raid", u"RAID Level:", None))
+        self.raid_level.setItemText(0, QCoreApplication.translate("New_Raid", u"0", None))
+        self.raid_level.setItemText(1, QCoreApplication.translate("New_Raid", u"1", None))
+        self.raid_level.setItemText(2, QCoreApplication.translate("New_Raid", u"5", None))
+        self.raid_level.setItemText(3, QCoreApplication.translate("New_Raid", u"6", None))
 
-        self.selectDevicesLabel.setText(QCoreApplication.translate("New_Raid", u"RAID Devices:", None))
-        self.toolButton.setText(QCoreApplication.translate("New_Raid", u"...", None))
-        self.pushButton_create.setText(QCoreApplication.translate("New_Raid", u"Create", None))
-        self.pushButton_cancel.setText(QCoreApplication.translate("New_Raid", u"Cancel", None))
+        self.select_devices_label.setText(QCoreApplication.translate("New_Raid", u"RAID Devices:", None))
+        self.select_devices.setText(QCoreApplication.translate("New_Raid", u"...", None))
+        self.devices_path.setText("")
+        self.remove_devices.setText(QCoreApplication.translate("New_Raid", u"Remove Selected Devices", None))
+        self.new_raid_create.setText(QCoreApplication.translate("New_Raid", u"Create", None))
+        self.new_raid_cancel.setText(QCoreApplication.translate("New_Raid", u"Cancel", None))
     # retranslateUi
 

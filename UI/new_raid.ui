@@ -39,24 +39,24 @@
      <number>0</number>
     </property>
     <item row="0" column="0">
-     <widget class="QLabel" name="label">
+     <widget class="QLabel" name="raid_name_label">
       <property name="text">
        <string>RAID Name:</string>
       </property>
      </widget>
     </item>
     <item row="0" column="1">
-     <widget class="QLineEdit" name="lineEdit"/>
+     <widget class="QLineEdit" name="raid_name"/>
     </item>
     <item row="1" column="0">
-     <widget class="QLabel" name="rAIDLevelLabel">
+     <widget class="QLabel" name="raid_Level_Llabel">
       <property name="text">
        <string>RAID Level:</string>
       </property>
      </widget>
     </item>
     <item row="1" column="1">
-     <widget class="QComboBox" name="rAIDLevelComboBox">
+     <widget class="QComboBox" name="raid_level">
       <item>
        <property name="text">
         <string>0</string>
@@ -80,38 +80,36 @@
      </widget>
     </item>
     <item row="2" column="0">
-     <widget class="QLabel" name="selectDevicesLabel">
+     <widget class="QLabel" name="select_devices_label">
       <property name="text">
        <string>RAID Devices:</string>
       </property>
      </widget>
     </item>
     <item row="2" column="1">
-     <widget class="QToolButton" name="toolButton">
+     <widget class="QToolButton" name="select_devices">
       <property name="text">
        <string>...</string>
       </property>
      </widget>
     </item>
     <item row="3" column="1">
-     <widget class="QTextBrowser" name="textBrowser">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Ignored">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
+     <widget class="QLabel" name="devices_path">
+      <property name="text">
+       <string/>
       </property>
-      <property name="maximumSize">
-       <size>
-        <width>500</width>
-        <height>100</height>
-       </size>
+     </widget>
+    </item>
+    <item row="4" column="1">
+     <widget class="QPushButton" name="remove_devices">
+      <property name="text">
+       <string>Remove Selected Devices</string>
       </property>
      </widget>
     </item>
    </layout>
   </widget>
-  <widget class="QPushButton" name="pushButton_create">
+  <widget class="QPushButton" name="new_raid_create">
    <property name="geometry">
     <rect>
      <x>590</x>
@@ -129,7 +127,7 @@
     <string>Create</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton_cancel">
+  <widget class="QPushButton" name="new_raid_cancel">
    <property name="geometry">
     <rect>
      <x>500</x>

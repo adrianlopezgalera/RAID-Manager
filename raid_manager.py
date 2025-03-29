@@ -2,7 +2,7 @@
 import sys
 from PySide6.QtWidgets import QApplication, QMainWindow
 from events_manager import EventsManager
-from new_raid import New_raid
+from new_raid import NewRaid
 
 # Important:
 # You need to run the following command to generate the ui_form.py file
@@ -18,7 +18,7 @@ class RaidManager(QMainWindow):
 
         # Connecting buttons to events:
 
-        raid = New_raid()
+        raid = NewRaid()
         self.ui.button1_new.clicked.connect(lambda: EventsManager.new_window(raid))
         self.ui.button4_info.clicked.connect(lambda: EventsManager.read_output("--help"))
 
