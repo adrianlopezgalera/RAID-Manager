@@ -17,7 +17,7 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QComboBox, QFormLayout, QLabel,
     QLayout, QLineEdit, QPushButton, QSizePolicy,
-    QToolButton, QWidget)
+    QWidget)
 
 class Ui_New_Raid(object):
     def setupUi(self, New_Raid):
@@ -63,20 +63,25 @@ class Ui_New_Raid(object):
 
         self.formLayout.setWidget(2, QFormLayout.LabelRole, self.select_devices_label)
 
-        self.select_devices = QToolButton(self.formLayoutWidget)
-        self.select_devices.setObjectName(u"select_devices")
-
-        self.formLayout.setWidget(2, QFormLayout.FieldRole, self.select_devices)
-
         self.devices_path = QLabel(self.formLayoutWidget)
         self.devices_path.setObjectName(u"devices_path")
 
-        self.formLayout.setWidget(3, QFormLayout.FieldRole, self.devices_path)
+        self.formLayout.setWidget(4, QFormLayout.FieldRole, self.devices_path)
 
         self.remove_devices = QPushButton(self.formLayoutWidget)
         self.remove_devices.setObjectName(u"remove_devices")
 
-        self.formLayout.setWidget(4, QFormLayout.FieldRole, self.remove_devices)
+        self.formLayout.setWidget(5, QFormLayout.FieldRole, self.remove_devices)
+
+        self.devices = QComboBox(self.formLayoutWidget)
+        self.devices.setObjectName(u"devices")
+
+        self.formLayout.setWidget(2, QFormLayout.FieldRole, self.devices)
+
+        self.add_device = QPushButton(self.formLayoutWidget)
+        self.add_device.setObjectName(u"add_device")
+
+        self.formLayout.setWidget(3, QFormLayout.FieldRole, self.add_device)
 
         self.new_raid_create = QPushButton(New_Raid)
         self.new_raid_create.setObjectName(u"new_raid_create")
@@ -103,9 +108,9 @@ class Ui_New_Raid(object):
         self.raid_level.setItemText(3, QCoreApplication.translate("New_Raid", u"6", None))
 
         self.select_devices_label.setText(QCoreApplication.translate("New_Raid", u"RAID Devices:", None))
-        self.select_devices.setText(QCoreApplication.translate("New_Raid", u"...", None))
         self.devices_path.setText("")
         self.remove_devices.setText(QCoreApplication.translate("New_Raid", u"Remove Selected Devices", None))
+        self.add_device.setText(QCoreApplication.translate("New_Raid", u"Add Selected Device", None))
         self.new_raid_create.setText(QCoreApplication.translate("New_Raid", u"Create", None))
         self.new_raid_cancel.setText(QCoreApplication.translate("New_Raid", u"Cancel", None))
     # retranslateUi

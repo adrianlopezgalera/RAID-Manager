@@ -86,24 +86,27 @@
       </property>
      </widget>
     </item>
-    <item row="2" column="1">
-     <widget class="QToolButton" name="select_devices">
-      <property name="text">
-       <string>...</string>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="1">
+    <item row="4" column="1">
      <widget class="QLabel" name="devices_path">
       <property name="text">
        <string/>
       </property>
      </widget>
     </item>
-    <item row="4" column="1">
+    <item row="5" column="1">
      <widget class="QPushButton" name="remove_devices">
       <property name="text">
        <string>Remove Selected Devices</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1">
+     <widget class="QComboBox" name="devices"/>
+    </item>
+    <item row="3" column="1">
+     <widget class="QPushButton" name="add_device">
+      <property name="text">
+       <string>Add Selected Device</string>
       </property>
      </widget>
     </item>

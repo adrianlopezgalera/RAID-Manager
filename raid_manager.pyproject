@@ -4,6 +4,7 @@
         "__init__.py",
         "UI/main.ui",
         "UI/new_raid.ui",
-        "UI/info.ui"
+        "UI/info.ui",
+        "UI/dialog.ui"
     ]
 }

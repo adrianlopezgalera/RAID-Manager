@@ -3,15 +3,15 @@ import subprocess
 class EventsManager:
 
     @staticmethod
-    def run_command(command):
+    def run_command(*args, **kwargs):
         try:
-            subprocess.run(command, shell=True)
+            return subprocess.run(*args, **kwargs)
         except subprocess.CalledProcessError as e:
             print(f"Error executing the command: {e}")
     @staticmethod
     def read_output(command):
         try:
-            response = subprocess.run('mdadm ' + command, shell=True, check=True, stdout=subprocess.PIPE, universal_newlines=True)
+            response = subprocess.run(command, shell=True, check=True, stdout=subprocess.PIPE, universal_newlines=True)
             print(response.stdout)
         except subprocess.CalledProcessError as e:
             print(f"Error executing the command: {e}")
