@@ -46,7 +46,14 @@
      </widget>
     </item>
     <item row="0" column="1">
-     <widget class="QLineEdit" name="raid_name"/>
+     <widget class="QLineEdit" name="raid_name">
+      <property name="statusTip">
+       <string extracomment="Enter a name for the RAID"/>
+      </property>
+      <property name="text">
+       <string>md0</string>
+      </property>
+     </widget>
     </item>
     <item row="1" column="0">
      <widget class="QLabel" name="raid_Level_Llabel">
