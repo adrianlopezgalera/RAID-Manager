@@ -3,6 +3,7 @@ import os
 import sys
 from PySide6.QtWidgets import QApplication, QMainWindow
 from events_manager import EventsManager
+from info import Info
 from new_raid import NewRaid
 
 # Important:
@@ -12,6 +13,7 @@ from new_raid import NewRaid
 from UI.ui_main import Ui_RAID_Manager
 
 class RaidManager(QMainWindow):
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.ui = Ui_RAID_Manager()
@@ -21,7 +23,8 @@ class RaidManager(QMainWindow):
 
         raid = NewRaid()
         self.ui.button1_new.clicked.connect(lambda: EventsManager.new_window(raid))
-        self.ui.button4_info.clicked.connect(lambda: EventsManager.read_output("--help"))
+        info = Info()
+        self.ui.button3_info.clicked.connect(lambda: EventsManager.new_window(info))
 
 
 if __name__ == "__main__":

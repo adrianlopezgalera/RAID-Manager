@@ -99,7 +99,7 @@ class Ui_New_Raid(object):
     # setupUi
 
     def retranslateUi(self, New_Raid):
-        New_Raid.setWindowTitle(QCoreApplication.translate("New_Raid", u"Form", None))
+        New_Raid.setWindowTitle(QCoreApplication.translate("New_Raid", u"New RAID", None))
         self.raid_name_label.setText(QCoreApplication.translate("New_Raid", u"RAID Name:", None))
 #if QT_CONFIG(statustip)
         self.raid_name.setStatusTip("")

@@ -32,6 +32,7 @@ class Ui_RAID_Manager(object):
         RAID_Manager.setCursor(QCursor(Qt.CursorShape.ArrowCursor))
         RAID_Manager.setLocale(QLocale(QLocale.English, QLocale.UnitedStates))
         RAID_Manager.setDocumentMode(False)
+        RAID_Manager.setUnifiedTitleAndToolBarOnMac(False)
         self.centralwidget = QWidget(RAID_Manager)
         self.centralwidget.setObjectName(u"centralwidget")
         self.verticalFrame = QFrame(self.centralwidget)
@@ -61,21 +62,13 @@ class Ui_RAID_Manager(object):
 
         self.verticalLayout_2.addWidget(self.button2_edit)
 
-        self.button3_delete = QPushButton(self.verticalFrame)
-        self.button3_delete.setObjectName(u"button3_delete")
-        self.button3_delete.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        icon2 = QIcon(QIcon.fromTheme(QIcon.ThemeIcon.EditDelete))
-        self.button3_delete.setIcon(icon2)
+        self.button3_info = QPushButton(self.verticalFrame)
+        self.button3_info.setObjectName(u"button3_info")
+        self.button3_info.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        icon2 = QIcon(QIcon.fromTheme(QIcon.ThemeIcon.HelpAbout))
+        self.button3_info.setIcon(icon2)
 
-        self.verticalLayout_2.addWidget(self.button3_delete)
-
-        self.button4_info = QPushButton(self.verticalFrame)
-        self.button4_info.setObjectName(u"button4_info")
-        self.button4_info.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        icon3 = QIcon(QIcon.fromTheme(QIcon.ThemeIcon.HelpAbout))
-        self.button4_info.setIcon(icon3)
-
-        self.verticalLayout_2.addWidget(self.button4_info)
+        self.verticalLayout_2.addWidget(self.button3_info)
 
         RAID_Manager.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(RAID_Manager)
@@ -91,9 +84,8 @@ class Ui_RAID_Manager(object):
         self.statusbar = QStatusBar(RAID_Manager)
         self.statusbar.setObjectName(u"statusbar")
         RAID_Manager.setStatusBar(self.statusbar)
-        QWidget.setTabOrder(self.button1_new, self.button3_delete)
-        QWidget.setTabOrder(self.button3_delete, self.button2_edit)
-        QWidget.setTabOrder(self.button2_edit, self.button4_info)
+        QWidget.setTabOrder(self.button1_new, self.button2_edit)
+        QWidget.setTabOrder(self.button2_edit, self.button3_info)
 
         self.menubar.addAction(self.menuFiler.menuAction())
         self.menubar.addAction(self.menuSettings.menuAction())
@@ -105,14 +97,13 @@ class Ui_RAID_Manager(object):
     # setupUi
 
     def retranslateUi(self, RAID_Manager):
-        RAID_Manager.setWindowTitle(QCoreApplication.translate("RAID_Manager", u"RAID_Manager", None))
+        RAID_Manager.setWindowTitle(QCoreApplication.translate("RAID_Manager", u"RAID Manager", None))
 #if QT_CONFIG(tooltip)
         self.button1_new.setToolTip(QCoreApplication.translate("RAID_Manager", u"It creates a new RAID with selected devices", None))
 #endif // QT_CONFIG(tooltip)
         self.button1_new.setText(QCoreApplication.translate("RAID_Manager", u"Create a new RAID...", None))
         self.button2_edit.setText(QCoreApplication.translate("RAID_Manager", u"Edit an existing RAID...", None))
-        self.button3_delete.setText(QCoreApplication.translate("RAID_Manager", u"Delete an existing RAID...", None))
-        self.button4_info.setText(QCoreApplication.translate("RAID_Manager", u"Get info about an existing RAID...", None))
+        self.button3_info.setText(QCoreApplication.translate("RAID_Manager", u"Get info about an existing RAID...", None))
         self.menuFiler.setTitle(QCoreApplication.translate("RAID_Manager", u"File", None))
         self.menuSettings.setTitle(QCoreApplication.translate("RAID_Manager", u"Settings", None))
         self.menuHelp.setTitle(QCoreApplication.translate("RAID_Manager", u"Help", None))

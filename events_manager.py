@@ -1,5 +1,6 @@
 import subprocess
 
+from PyQt6.QtWidgets import QWidget
 from PySide6.QtWidgets import QMessageBox
 
 
@@ -21,6 +22,10 @@ class EventsManager:
     @staticmethod
     def new_window(self):
         self.show()
+
+    @staticmethod
+    def create_object(class_name):
+        return type(class_name)
 
     @staticmethod
     def action(**kwargs):
