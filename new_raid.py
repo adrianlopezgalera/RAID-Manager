@@ -2,7 +2,7 @@ import subprocess
 
 from PySide6.QtWidgets import QWidget, QMessageBox
 from UI.ui_new_raid import Ui_New_Raid
-from dialogs import Dialogs
+from notifications import Notifications
 from events_manager import EventsManager
 
 class NewRaid(QWidget):
@@ -57,7 +57,7 @@ class NewRaid(QWidget):
 
         print(response)
 
-        dialog = Dialogs()
+        dialog = Notifications()
 
         if response.__contains__("ext2fs file system"):
 

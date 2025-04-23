@@ -1,7 +1,10 @@
 import subprocess
+from operator import truediv
 
-from PyQt6.QtWidgets import QWidget
 from PySide6.QtWidgets import QMessageBox
+
+from dialogs import Dialogs
+from notifications import Notifications
 
 
 class EventsManager:
@@ -40,3 +43,25 @@ class EventsManager:
         elif dialog == QMessageBox.StandardButton.Cancel:
             process.stdin.write('n')
             process.stdin.flush()
+
+    @staticmethod
+    def fill_raid_list():
+        return EventsManager.run_command(['pkexec', 'mdadm', '--detail' , '--scan'], capture_output=True, text=True).stdout.splitlines()
+
+    @staticmethod
+    def check_if_selected_raid(selected_raid):
+        if selected_raid != "":
+            return True
+        else:
+            dialog = Notifications()
+            dialog.new_dialog(title="Error", text="You must select a RAID first", icon="critical", buttons=["ok"])
+            return False
+
+    @staticmethod
+    def change_name_dialog(selected_raid):
+        if EventsManager.check_if_selected_raid(selected_raid):
+            dialog = Dialogs()
+            dialog.ui.current_raid.setText(selected_raid)
+            dialog.setWindowTitle("Change RAID Name")
+            dialog.ui.label.setText("Enter new RAID Name:")
+            dialog.show()

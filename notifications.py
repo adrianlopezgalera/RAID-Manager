@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import QApplication, QMessageBox
 
-class Dialogs(QMessageBox):
+class Notifications(QMessageBox):
     def __init__(self, parent=None):
         super().__init__(parent)
 

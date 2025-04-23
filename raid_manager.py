@@ -1,7 +1,10 @@
 # This Python file uses the following encoding: utf-8
 import os
+import subprocess
 import sys
 from PySide6.QtWidgets import QApplication, QMainWindow
+
+from edit import Edit
 from events_manager import EventsManager
 from info import Info
 from new_raid import NewRaid
@@ -19,12 +22,19 @@ class RaidManager(QMainWindow):
         self.ui = Ui_RAID_Manager()
         self.ui.setupUi(self)
 
-        # Connecting buttons to events:
+      #  new_raid = NewRaid()
+     #   edit = Edit()
+      #  info = Info()
 
-        raid = NewRaid()
-        self.ui.button1_new.clicked.connect(lambda: EventsManager.new_window(raid))
-        info = Info()
-        self.ui.button3_info.clicked.connect(lambda: EventsManager.new_window(info))
+        # Connecting buttons to events:
+        self.ui.button1_new.clicked.connect(lambda: EventsManager.create_object(NewRaid().show()))
+
+       # self.ui.button1_new.clicked.connect(lambda: EventsManager.new_window(new_raid))
+        #self.ui.button2_edit.clicked.connect(lambda: EventsManager.new_window(edit))
+        #self.ui.button3_info.clicked.connect(lambda: EventsManager.new_window(info))
+        self.ui.button2_edit.clicked.connect(lambda: EventsManager.create_object(Edit().show()))
+
+        self.ui.button3_info.clicked.connect(lambda: EventsManager.create_object(Info().show()))
 
 
 if __name__ == "__main__":

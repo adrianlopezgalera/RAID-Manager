@@ -7,65 +7,70 @@ from events_manager import EventsManager
 
 class Info(QWidget):
 
-    raid = ""
-
     def __init__(self):
         super().__init__(parent=None)
         self.ui = Ui_Info()
         self.ui.setupUi(self)
 
         # Executing functions:
-        self.fill_raid_list()
+        self.print_raid_list()
 
         # Connecting buttons to events:
         self.ui.OK_button.clicked.connect(self.close)
-        self.ui.apply_button.clicked.connect(lambda: self.fill_raid_details())
+        self.ui.apply_button.clicked.connect(lambda: self.print_raid_details())
 
 
-    def fill_raid_list(self):
-        result = EventsManager.run_command(['pkexec', 'mdadm', '--detail' , '--scan'], capture_output=True, text=True)
+    def print_raid_list(self):
 
-        output = result.stdout
+        arrays = EventsManager.fill_raid_list()
 
-        arrays = output.splitlines()
-
-        print(arrays)
         for array in arrays:
-
             path = array[array.find('/'): array.find(' metadata')]
             self.ui.select_raid.addItem(path)
 
-    def fill_raid_details(self):
-        self.raid = self.ui.select_raid.currentText()
 
-        print(self.raid)
+    def print_raid_details(self):
 
-        result = EventsManager.run_command(['pkexec', 'mdadm', '--detail', self.raid], capture_output=True, text=True)
+        # Taking selected RAID:
 
-        self.ui.raid_path.setText(self.raid)
+        raid = self.ui.select_raid.currentText()
 
-        output = result.stdout
+        # Filling fields:
 
-        info = output.splitlines()
+        arrays = EventsManager.run_command(['pkexec', 'mdadm', '--detail', raid], capture_output=True, text=True).stdout.splitlines()
 
-        print(info)
+        self.ui.raid_path.setText(raid)
 
-        for line in info:
+        for line in arrays:
+
             if line.__contains__('Raid Level'):
 
-                if line[21:].__eq__('raid0'):
+                if line.__contains__('raid0'):
                     self.ui.raid_level.setText('Raid 0')
-                if line[21:].__eq__('raid1'):
+                if line.__contains__('raid1'):
                     self.ui.raid_level.setText('Raid 1')
-                if line[21:].__eq__('raid5'):
+                if line.__contains__('raid5'):
                     self.ui.raid_level.setText('Raid 5')
-                if line[21:].__eq__('raid6'):
+                if line.__contains__('raid6'):
                     self.ui.raid_level.setText('Raid 6')
 
             if line.__contains__('Array Size'):
                 self.ui.raid_size.setText(line[21:])
             if line.__contains__('State : '):
-                self.ui.raid_state.setText(line[21:])
+                state = ""
+                if line.__contains__('active'):
+                    state += " Active "
+                if line.__contains__('clean'):
+                    state += " Clean "
+                if line.__contains__('resyncing'):
+                    state += " Resyncing "
+                if line.__contains__('degraded'):
+                    state += " Degraded "
+                if line.__contains__('recovering'):
+                    state += " Recovering "
+
+                self.ui.raid_state.setText(state)
+
             if line.__contains__('/'):
                 device = ""
                 device += line[line.find('/'):] + ' '
