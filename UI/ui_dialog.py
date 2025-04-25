@@ -15,15 +15,15 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QDialog, QLabel, QLineEdit,
-    QPushButton, QSizePolicy, QWidget)
+from PySide6.QtWidgets import (QApplication, QComboBox, QDialog, QLabel,
+    QLineEdit, QPushButton, QSizePolicy, QWidget)
 
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         if not Dialog.objectName():
             Dialog.setObjectName(u"Dialog")
         Dialog.setWindowModality(Qt.WindowModality.WindowModal)
-        Dialog.resize(703, 300)
+        Dialog.resize(678, 266)
         self.widget = QWidget(Dialog)
         self.widget.setObjectName(u"widget")
         self.widget.setGeometry(QRect(40, 19, 631, 211))
@@ -32,20 +32,28 @@ class Ui_Dialog(object):
         self.label.setGeometry(QRect(40, 70, 131, 41))
         self.text = QLineEdit(self.widget)
         self.text.setObjectName(u"text")
+        self.text.setEnabled(False)
         self.text.setGeometry(QRect(210, 80, 381, 22))
         self.text.setLocale(QLocale(QLocale.English, QLocale.UnitedStates))
-        self.current_raid = QLabel(self.widget)
-        self.current_raid.setObjectName(u"current_raid")
-        self.current_raid.setGeometry(QRect(210, 30, 381, 20))
+        self.current_attribute = QLabel(self.widget)
+        self.current_attribute.setObjectName(u"current_attribute")
+        self.current_attribute.setGeometry(QRect(210, 30, 381, 20))
+        self.current_attribute_label = QLabel(self.widget)
+        self.current_attribute_label.setObjectName(u"current_attribute_label")
+        self.current_attribute_label.setGeometry(QRect(40, 30, 121, 20))
+        self.selector = QComboBox(self.widget)
+        self.selector.setObjectName(u"selector")
+        self.selector.setEnabled(False)
+        self.selector.setGeometry(QRect(208, 80, 391, 23))
         self.ok_button = QPushButton(Dialog)
         self.ok_button.setObjectName(u"ok_button")
-        self.ok_button.setGeometry(QRect(590, 270, 80, 23))
+        self.ok_button.setGeometry(QRect(590, 230, 80, 23))
         font = QFont()
         font.setBold(False)
         self.ok_button.setFont(font)
         self.cancel_button = QPushButton(Dialog)
         self.cancel_button.setObjectName(u"cancel_button")
-        self.cancel_button.setGeometry(QRect(500, 270, 80, 23))
+        self.cancel_button.setGeometry(QRect(500, 230, 80, 23))
         self.cancel_button.setLocale(QLocale(QLocale.English, QLocale.UnitedStates))
 
         self.retranslateUi(Dialog)
@@ -60,7 +68,8 @@ class Ui_Dialog(object):
         self.text.setStatusTip("")
 #endif // QT_CONFIG(statustip)
         self.text.setText("")
-        self.current_raid.setText("")
+        self.current_attribute.setText("")
+        self.current_attribute_label.setText("")
         self.ok_button.setText(QCoreApplication.translate("Dialog", u"OK", None))
         self.cancel_button.setText(QCoreApplication.translate("Dialog", u"Cancel", None))
     # retranslateUi

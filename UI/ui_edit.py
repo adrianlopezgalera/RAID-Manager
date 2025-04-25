@@ -63,13 +63,13 @@ class Ui_Edit(object):
 
         self.row_1 = QWidget(Edit)
         self.row_1.setObjectName(u"row_1")
-        self.row_1.setGeometry(QRect(31, 220, 628, 43))
+        self.row_1.setGeometry(QRect(30, 250, 628, 43))
         self.horizontalLayout = QHBoxLayout(self.row_1)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.change_name_button = QPushButton(self.row_1)
-        self.change_name_button.setObjectName(u"change_name_button")
+        self.change_level_button = QPushButton(self.row_1)
+        self.change_level_button.setObjectName(u"change_level_button")
 
-        self.horizontalLayout.addWidget(self.change_name_button)
+        self.horizontalLayout.addWidget(self.change_level_button)
 
         self.add_drive_button = QPushButton(self.row_1)
         self.add_drive_button.setObjectName(u"add_drive_button")
@@ -83,14 +83,9 @@ class Ui_Edit(object):
 
         self.row_2 = QWidget(Edit)
         self.row_2.setObjectName(u"row_2")
-        self.row_2.setGeometry(QRect(31, 270, 628, 43))
+        self.row_2.setGeometry(QRect(30, 300, 628, 43))
         self.horizontalLayout_2 = QHBoxLayout(self.row_2)
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
-        self.change_level_button = QPushButton(self.row_2)
-        self.change_level_button.setObjectName(u"change_level_button")
-
-        self.horizontalLayout_2.addWidget(self.change_level_button)
-
         self.assemble_button = QPushButton(self.row_2)
         self.assemble_button.setObjectName(u"assemble_button")
 
@@ -101,12 +96,7 @@ class Ui_Edit(object):
 
         self.horizontalLayout_2.addWidget(self.stop_button)
 
-        self.row_3 = QWidget(Edit)
-        self.row_3.setObjectName(u"row_3")
-        self.row_3.setGeometry(QRect(30, 320, 631, 43))
-        self.horizontalLayout_3 = QHBoxLayout(self.row_3)
-        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
-        self.delete_button = QPushButton(self.row_3)
+        self.delete_button = QPushButton(self.row_2)
         self.delete_button.setObjectName(u"delete_button")
         palette = QPalette()
         brush = QBrush(QColor(0, 0, 0, 255))
@@ -192,7 +182,7 @@ class Ui_Edit(object):
         palette.setBrush(QPalette.Disabled, QPalette.Accent, brush11)
         self.delete_button.setPalette(palette)
 
-        self.horizontalLayout_3.addWidget(self.delete_button)
+        self.horizontalLayout_2.addWidget(self.delete_button)
 
         self.cancel_button = QPushButton(Edit)
         self.cancel_button.setObjectName(u"cancel_button")
@@ -209,10 +199,9 @@ class Ui_Edit(object):
         self.apply_button.setText(QCoreApplication.translate("Edit", u"Apply", None))
         self.selected_raid_label.setText(QCoreApplication.translate("Edit", u"Selected RAID:", None))
         self.selected_raid.setText("")
-        self.change_name_button.setText(QCoreApplication.translate("Edit", u"Change name", None))
+        self.change_level_button.setText(QCoreApplication.translate("Edit", u"Change level", None))
         self.add_drive_button.setText(QCoreApplication.translate("Edit", u"Add drive", None))
         self.remove_drive_button.setText(QCoreApplication.translate("Edit", u"Remove drive", None))
-        self.change_level_button.setText(QCoreApplication.translate("Edit", u"Change level", None))
         self.assemble_button.setText(QCoreApplication.translate("Edit", u"Asemble", None))
         self.stop_button.setText(QCoreApplication.translate("Edit", u"Stop", None))
         self.delete_button.setText(QCoreApplication.translate("Edit", u"Delete", None))

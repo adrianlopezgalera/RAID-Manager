@@ -73,10 +73,10 @@ class Ui_New_Raid(object):
 
         self.formLayout.setWidget(5, QFormLayout.FieldRole, self.remove_devices)
 
-        self.devices = QComboBox(self.formLayoutWidget)
-        self.devices.setObjectName(u"devices")
+        self.selector = QComboBox(self.formLayoutWidget)
+        self.selector.setObjectName(u"selector")
 
-        self.formLayout.setWidget(2, QFormLayout.FieldRole, self.devices)
+        self.formLayout.setWidget(2, QFormLayout.FieldRole, self.selector)
 
         self.add_device = QPushButton(self.formLayoutWidget)
         self.add_device.setObjectName(u"add_device")

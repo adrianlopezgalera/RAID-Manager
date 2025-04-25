@@ -21,12 +21,12 @@ class Edit(QWidget):
 
         # Connecting buttons to events:
 
-        self.ui.cancel_button.clicked.connect(lambda: self.close)
+        self.ui.cancel_button.clicked.connect(self.close)
         self.ui.apply_button.clicked.connect(lambda: self.set_selected_raid())
 
 
-        self.ui.change_name_button.clicked.connect(lambda: EventsManager.change_name_dialog(selected_raid=self.selected_raid))
-        #self.ui.change_name_button.clicked.connect(lambda: EventsManager.new_window(dialog))
+        self.ui.change_level_button.clicked.connect(lambda: EventsManager.change_level_dialog(selected_raid=self.selected_raid))
+        self.ui.add_drive_button.clicked.connect(lambda: EventsManager.add_drive_dialog(selected_raid=self.selected_raid))
         #self.ui.apply_button.clicked.connect(lambda:)
 
 

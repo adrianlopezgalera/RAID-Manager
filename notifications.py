@@ -4,7 +4,7 @@ class Notifications(QMessageBox):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-    def new_dialog(self, title, text, icon, buttons):
+    def new_notification(self, title, text, icon, buttons):
         self.setWindowTitle(title)
         self.setText(text)
 

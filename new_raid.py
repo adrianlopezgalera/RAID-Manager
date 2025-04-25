@@ -19,7 +19,7 @@ class NewRaid(QWidget):
         self.ui.setupUi(self)
 
         # Executing functions:
-        self.fill_device_list2()
+        EventsManager.fill_device_list(self)
 
         # Connecting buttons to events:
         self.ui.new_raid_cancel.clicked.connect(self.close)
@@ -61,7 +61,7 @@ class NewRaid(QWidget):
 
         if response.__contains__("ext2fs file system"):
 
-            user_input = dialog.new_dialog(title="Warning", text="At least one selected device appears to contain an ext2fs file system." + "\nAre you sure that you want to continue?", icon="warning", buttons=["ok", "cancel"])
+            user_input = dialog.new_notification(title="Warning", text="At least one selected device appears to contain an ext2fs file system." + "\nAre you sure that you want to continue?", icon="warning", buttons=["ok", "cancel"])
 
             EventsManager.user_input_checking(user_input, process)
             """
@@ -74,7 +74,7 @@ class NewRaid(QWidget):
             """
         if response.__contains__("chunk size defaults to 512K"):
 
-            user_input = dialog.new_dialog(title="Warning", text="The chunk size will be defaulted to 512K." + "\nAre you sure that you want to continue?", icon="warning", buttons=["ok", "cancel"])
+            user_input = dialog.new_notification(title="Warning", text="The chunk size will be defaulted to 512K." + "\nAre you sure that you want to continue?", icon="warning", buttons=["ok", "cancel"])
 
             EventsManager.user_input_checking(user_input, process)
 
@@ -88,37 +88,23 @@ class NewRaid(QWidget):
             """
         
         if response.__contains__("at least 2 raid-devices needed for level 5"):
-            dialog.new_dialog(title="Error", text="At least 2 raid-devices are needed for level 5.", icon="critical", buttons=["ok"])
+            dialog.new_notification(title="Error", text="At least 2 raid-devices are needed for level 5.", icon="critical", buttons=["ok"])
 
         if response.__contains__("at least 4 raid-devices needed for level 6"):
-            dialog.new_dialog(title="Error", text="At least 3 raid-devices are needed for level 6.", icon="critical", buttons=["ok"])
+            dialog.new_notification(title="Error", text="At least 3 raid-devices are needed for level 6.", icon="critical", buttons=["ok"])
 
         if response.__contains__("invalid number of raid devices"):
-            dialog.new_dialog(title="Error", text="Invalid number of raid devices.", icon="critical", buttons=["ok"])
+            dialog.new_notification(title="Error", text="Invalid number of raid devices.", icon="critical", buttons=["ok"])
 
         if response.__contains__("partition table exists"):
-            dialog.new_dialog(title="Error", text="There is already a partition table in: " + self.selected_devices, icon="critical", buttons=["ok"])
+            dialog.new_notification(title="Error", text="There is already a partition table in: " + self.selected_devices, icon="critical", buttons=["ok"])
 
 
         # Metadatos para crear RAID sin interrupciones: --metadata = 0.90 - -run
         # Metadatos de procesos: shell=True, check=True, stdout=subprocess.PIPE, universal_newlines=True
 
-
+"""
     def fill_device_list(self):
-
-        result = EventsManager.run_command(['lsblk', '-o', 'NAME,SIZE,FSTYPE,MOUNTPOINT', '-l', '--noheadings'], capture_output=True, text=True)
-
-        output = result.stdout
-
-        devices = output.splitlines()
-        for device in devices:
-            device_info = device.split()
-            if len(device_info) >= 4:
-                device_name = device_info[0]
-                mount_point = device_info[3]
-                self.ui.devices.addItem(f"{device_name} - {mount_point}")
-
-    def fill_device_list2(self):
 
         result = EventsManager.run_command(['lsblk', '-o', 'NAME,SIZE,TYPE,FSTYPE,MOUNTPOINT', '-l', '--noheadings'], capture_output=True, text=True)
 
@@ -144,3 +130,5 @@ class NewRaid(QWidget):
 
                 if device_type == "part":
                     self.ui.devices.addItem(f"{device_name} - {device_size} ({device_fstype})")
+
+"""

@@ -59,15 +59,15 @@ class Info(QWidget):
             if line.__contains__('State : '):
                 state = ""
                 if line.__contains__('active'):
-                    state += " Active "
+                    state += "Active "
                 if line.__contains__('clean'):
-                    state += " Clean "
+                    state += "Clean "
                 if line.__contains__('resyncing'):
-                    state += " Resyncing "
+                    state += "Resyncing "
                 if line.__contains__('degraded'):
-                    state += " Degraded "
+                    state += "Degraded "
                 if line.__contains__('recovering'):
-                    state += " Recovering "
+                    state += "Recovering "
 
                 self.ui.raid_state.setText(state)
 
