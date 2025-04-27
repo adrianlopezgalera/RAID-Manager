@@ -29,3 +29,19 @@ class Notifications(QMessageBox):
             self.addButton(QMessageBox.StandardButton.No)
 
         return self.exec()
+
+    def question_notification(self, program_name):
+
+        return self.new_notification(title="Warning",
+                                      text="Raid Manager needs to use " + program_name + " on your system to work, do you want to install it now?",
+                                      icon="warning", buttons=["ok", "cancel"])
+
+    def success_notification(self, program_name):
+            self.new_notification(title="Information",
+                                          text=program_name + " has been installed correctly",
+                                          icon="information", buttons=["ok"])
+
+    def error_notification(self, program_name):
+            self.new_notification(title="Error",
+                                      text="It has not been possible to install " + program_name + " on yor system",
+                                      icon="critical", buttons=["ok"])

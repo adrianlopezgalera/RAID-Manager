@@ -37,7 +37,7 @@ class Info(QWidget):
 
         # Filling fields:
 
-        arrays = EventsManager.run_command(['pkexec', 'mdadm', '--detail', raid], capture_output=True, text=True).stdout.splitlines()
+        arrays = EventsManager.run_command(['sudo', 'mdadm', '--detail', raid], capture_output=True, text=True).stdout.splitlines()
 
         self.ui.raid_path.setText(raid)
 

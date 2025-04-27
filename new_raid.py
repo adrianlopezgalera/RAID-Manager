@@ -28,7 +28,7 @@ class NewRaid(QWidget):
         self.ui.new_raid_create.clicked.connect(lambda: self.create_new_raid())
 
     def select_devices(self):
-       return '/dev/' + self.ui.devices.currentText()[0: self.ui.devices.currentText().find('-')]
+       return '/dev/' + self.ui.selector.currentText()[0: self.ui.selector.currentText().find('-')]
 
     def set_selected_devices(self):
 
@@ -51,7 +51,7 @@ class NewRaid(QWidget):
 
         EventsManager.run_command('umount' + self.selected_devices.replace("\n", " "), shell=True)
 
-        process = EventsManager.read_output('pkexec mdadm --create --verbose --force ' + '/dev/'+self.raid_name + ' ' + '--level=' + self.raid_level + ' ' + '--raid-devices=' + str(self.selected_devices.count('\n')) + ' ' + self.selected_devices.replace("\n", " "), shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        process = EventsManager.read_output('sudo mdadm --create --verbose --force ' + '/dev/'+self.raid_name + ' ' + '--level=' + self.raid_level + ' ' + '--raid-devices=' + str(self.selected_devices.count('\n')) + ' ' + self.selected_devices.replace("\n", " "), shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
         response = process.stderr.readline()
 
@@ -74,7 +74,7 @@ class NewRaid(QWidget):
             """
         if response.__contains__("chunk size defaults to 512K"):
 
-            user_input = dialog.new_notification(title="Warning", text="The chunk size will be defaulted to 512K." + "\nAre you sure that you want to continue?", icon="warning", buttons=["ok", "cancel"])
+            user_input = dialog.new_notification(title="Warning", text="The chunk size will be defaulted to 512K." + "\nAre you sure that you want to continue?", icon="critical", buttons=["ok", "cancel"])
 
             EventsManager.user_input_checking(user_input, process)
 

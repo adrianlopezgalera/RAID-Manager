@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 15.0.1, 2025-04-23T00:04:15. -->
+<!-- Written by QtCreator 15.0.1, 2025-04-25T21:15:27. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -158,7 +158,7 @@
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">raid_manager.py</value>
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">PythonEditor.RunConfiguration.</value>
     <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">/home/adr/Documentos/Contenido propio/Materias/Mis programas/Pruebas de Python/RAID Manager/raid_manager.py</value>
-    <value type="bool" key="ProjectExplorer.RunConfiguration.Customized">false</value>
+    <value type="bool" key="ProjectExplorer.RunConfiguration.Customized">true</value>
     <value type="QString" key="PythonEditor.RunConfiguation.Script">/home/adr/Documentos/Contenido propio/Materias/Mis programas/Pruebas de Python/RAID Manager/raid_manager.py</value>
     <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">true</value>
     <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
@@ -178,7 +178,7 @@
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">/home/adr/Documentos/Contenido propio/Materias/Mis programas/Pruebas de Python/RAID Manager/__init__.py</value>
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">PythonEditor.RunConfiguration.</value>
     <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">/home/adr/Documentos/Contenido propio/Materias/Mis programas/Pruebas de Python/RAID Manager/__init__.py</value>
-    <value type="bool" key="ProjectExplorer.RunConfiguration.Customized">false</value>
+    <value type="bool" key="ProjectExplorer.RunConfiguration.Customized">true</value>
     <value type="QString" key="PythonEditor.RunConfiguation.Script">/home/adr/Documentos/Contenido propio/Materias/Mis programas/Pruebas de Python/RAID Manager/__init__.py</value>
     <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">true</value>
     <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
