@@ -24,10 +24,11 @@ class Edit(QWidget):
         self.ui.cancel_button.clicked.connect(self.close)
         self.ui.apply_button.clicked.connect(lambda: self.set_selected_raid())
 
-
         self.ui.change_level_button.clicked.connect(lambda: EventsManager.change_level_dialog(selected_raid=self.selected_raid))
         self.ui.add_drive_button.clicked.connect(lambda: EventsManager.add_drive_dialog(selected_raid=self.selected_raid))
-        #self.ui.apply_button.clicked.connect(lambda:)
+        self.ui.remove_drive_button.clicked.connect(lambda: EventsManager.remove_drive_dialog(selected_raid=self.selected_raid))
+        self.ui.assemble_button.clicked.connect(lambda: EventsManager.assemble_dialog())
+        self.ui.stop_button.clicked.connect(lambda: EventsManager.stop_dialog(selected_raid=self.selected_raid))
 
 
     def print_raid_list(self):
@@ -35,9 +36,7 @@ class Edit(QWidget):
         arrays = EventsManager.fill_raid_list()
 
         for array in arrays:
-
-            path = array[array.find('/'): array.find(' metadata')]
-            self.ui.select_raid.addItem(path)
+            self.ui.select_raid.addItem(array)
 
     def set_selected_raid(self):
         selected_raid = self.ui.select_raid.currentText()

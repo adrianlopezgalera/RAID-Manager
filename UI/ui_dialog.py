@@ -29,7 +29,7 @@ class Ui_Dialog(object):
         self.widget.setGeometry(QRect(40, 19, 631, 211))
         self.label = QLabel(self.widget)
         self.label.setObjectName(u"label")
-        self.label.setGeometry(QRect(40, 70, 131, 41))
+        self.label.setGeometry(QRect(40, 70, 151, 41))
         self.text = QLineEdit(self.widget)
         self.text.setObjectName(u"text")
         self.text.setEnabled(False)

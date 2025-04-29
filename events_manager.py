@@ -2,7 +2,7 @@ import os
 import subprocess
 import sys
 
-from PySide6.QtWidgets import QMessageBox, QApplication
+from PySide6.QtWidgets import QMessageBox
 from dialogs import Dialogs
 from notifications import Notifications
 
@@ -18,7 +18,8 @@ class EventsManager:
     @staticmethod
     def read_output(*args, **kwargs):
         try:
-            return subprocess.Popen(*args, **kwargs)
+            return subprocess.Popen(*args, **kwargs, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                                                            stderr=subprocess.PIPE, text=True)
         except subprocess.CalledProcessError as e:
             print(f"Error executing the command: {e}")
 
@@ -51,21 +52,21 @@ class EventsManager:
             if EventsManager.is_installed('apt'):
                 try:
                     subprocess.check_call(["pkexec", "apt", "install", program_name])
-                    notification.success_notification(program_name)
+                    notification.success_notification(program_name, "installed")
                     EventsManager.restart()
                 except subprocess.CalledProcessError as e:
                     print(f"Error installing {program_name}: {e}")
             if EventsManager.is_installed('yum'):
                 try:
                     subprocess.check_call(["pkexec", "yum", "install", program_name])
-                    notification.success_notification(program_name)
+                    notification.success_notification(program_name, "installed")
                     EventsManager.restart()
                 except subprocess.CalledProcessError as e:
                     print(f"Error installing {program_name}: {e}")
             if EventsManager.is_installed('dnf'):
                 try:
                     subprocess.check_call(["pkexec", "dnf", "install", program_name])
-                    notification.success_notification(program_name)
+                    notification.success_notification(program_name, "installed")
                     EventsManager.restart()
                 except subprocess.CalledProcessError as e:
                     print(f"Error installing {program_name}: {e}")
@@ -116,15 +117,12 @@ class EventsManager:
                 EventsManager.run_command(command, shell=True)
 
                 # Delete temporal file:
-
                 os.remove(os.path.join(file_path, file_name))
 
                 # Inform the user:
-
-                notification.success_notification('The policy')
+                notification.success_notification('The policy', "installed")
 
                 # Restart the application:
-
                 EventsManager.restart()
 
             except subprocess.CalledProcessError:
@@ -150,13 +148,26 @@ class EventsManager:
         if dialog == QMessageBox.StandardButton.Ok:
             process.stdin.write('y')
             process.stdin.flush()
+            return True
         elif dialog == QMessageBox.StandardButton.Cancel:
             process.stdin.write('n')
             process.stdin.flush()
+            return False
+        else:
+            process.stdin.write('n')
+            process.stdin.flush()
+            return False
 
     @staticmethod
     def fill_raid_list():
-        return EventsManager.run_command(['sudo', 'mdadm', '--detail' , '--scan'], capture_output=True, text=True).stdout.splitlines()
+        arrays = EventsManager.run_command(['sudo', 'mdadm', '--detail' , '--scan'], capture_output=True, text=True).stdout.splitlines()
+
+        array_list = ""
+
+        for array in arrays:
+            array_list += array[array.find('/'): array.find(' metadata')] + '\n'
+
+        return array_list.splitlines()
 
     @staticmethod
     def fill_device_list(window):
@@ -185,6 +196,22 @@ class EventsManager:
 
                 if device_type == "part":
                     window.ui.selector.addItem(f"{device_name} - {device_size} ({device_fstype})")
+
+    @staticmethod
+    def fill_raid_member_list(raid):
+
+        arrays = EventsManager.run_command(['sudo', 'mdadm', '--detail', raid], capture_output=True, text=True).stdout.splitlines()
+
+        device = ""
+
+        for line in arrays:
+
+            if line.__contains__('/dev/s'):
+
+                device += line[line.find('/'):] + '\n'
+
+        return device.splitlines()
+
 
     @staticmethod
     def check_if_selected_raid(selected_raid):
@@ -228,8 +255,7 @@ class EventsManager:
             def change_level_action():
 
                 new_level = dialog.ui.selector.currentText()
-                process = EventsManager.read_output('sudo mdadm --grow ' + selected_raid + ' --level=' + new_level , shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-
+                process = EventsManager.read_output('sudo mdadm --grow ' + selected_raid + ' --level=' + new_level)
                 response = process.stderr.readline()
 
                 print(response)
@@ -265,8 +291,14 @@ class EventsManager:
             To assemble: mdadm --assemble /dev/md0
 
             To stop: mdadm --stop /dev/md0
+            'sudo mdadm --stop ' + selected_raid
 
             To delete an existing RAID: mdadm --stop /dev/md0 mdadm --remove /dev/md0
+            
+            process2 = EventsManager.read_output('sudo mdadm' + ' /dev/' + self.raid_name, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+                print(process2)
+
+                print(process2.stderr.readline())
             """
 
     @staticmethod
@@ -297,11 +329,93 @@ class EventsManager:
             dialog.ui.ok_button.clicked.connect(lambda: add_drive_action())
 
             def add_drive_action():
-                new_drive = dialog.ui.selector.currentText()
-                process = EventsManager.read_output('sudo mdadm --manage ' + selected_raid + ' --add=' + new_drive,
-                                                    shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                                                    stderr=subprocess.PIPE, text=True)
+                selected_drive = dialog.ui.selector.currentText()
+                process = EventsManager.read_output('sudo mdadm --manage ' + selected_raid + ' --add=' + selected_drive)
 
                 response = process.stderr.readline()
 
                 print(response)
+
+
+    @staticmethod
+    def remove_drive_dialog(selected_raid):
+        if EventsManager.check_if_selected_raid(selected_raid):
+            dialog = Dialogs()
+
+            # Dialog attributes:
+
+            dialog.setWindowTitle("Remove drive from RAID")
+            dialog.ui.label.setText("Select a drive to remove:")
+            dialog.ui.current_attribute_label.setText("Current RAID Path:")
+            dialog.ui.current_attribute.setText(selected_raid)
+
+            # Enabling selector:
+
+            dialog.ui.selector.setEnabled(True)
+            dialog.ui.text.setEnabled(False)
+
+            # Filling selector:
+
+            devices = EventsManager.fill_raid_member_list(selected_raid)
+
+            for device in devices:
+
+                dialog.ui.selector.addItem(device)
+
+            # Actions:
+
+            dialog.show()
+
+            dialog.ui.ok_button.clicked.connect(lambda: remove_drive_action())
+
+            def remove_drive_action():
+                selected_drive = dialog.ui.selector.currentText()
+                EventsManager.run_command('umount ' + selected_drive, shell=True)
+                #EventsManager.run_command('sudo mdadm --stop ' + selected_raid, shell=True)
+                process = EventsManager.read_output('sudo mdadm ' + selected_raid + ' --fail ' + selected_drive + ' --remove ' + selected_drive)
+
+                response = process.stderr.readline()
+
+                print(response)
+
+                if response.__contains__("Device or resource busy"):
+                    notification = Notifications()
+                    notification.new_notification(title="Error", text="Device or resource busy. If you have created the RAID in this session, you need to restart your system first.",
+                                            icon="critical", buttons=["ok"])
+
+    @staticmethod
+    def assemble_dialog():
+            process = EventsManager.read_output('sudo mdadm --assemble --scan')
+
+            started_raid = ""
+
+            output = process.stderr.readlines()
+
+            for line in output:
+
+                started_raid += line + "\n"
+
+            notification = Notifications()
+            notification.new_notification(title="Information",
+                                          text=started_raid,
+                                          icon="information", buttons=["ok"])
+
+
+    @staticmethod
+    def stop_dialog(selected_raid):
+        if EventsManager.check_if_selected_raid(selected_raid):
+            process = EventsManager.read_output('sudo mdadm --stop ' + selected_raid)
+
+            output = process.stderr.readline()
+            print(output)
+
+            if output.__contains__("No such file or directory"):
+                notification = Notifications()
+                notification.new_notification(title="Error",
+                                              text="The RAID is already stopped",
+                                              icon="error", buttons=["ok"])
+
+            if output.__contains__("stopped"):
+
+                notification = Notifications()
+                notification.success_notification(selected_raid, "stopped")

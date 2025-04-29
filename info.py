@@ -19,14 +19,12 @@ class Info(QWidget):
         self.ui.OK_button.clicked.connect(self.close)
         self.ui.apply_button.clicked.connect(lambda: self.print_raid_details())
 
-
     def print_raid_list(self):
 
         arrays = EventsManager.fill_raid_list()
 
         for array in arrays:
-            path = array[array.find('/'): array.find(' metadata')]
-            self.ui.select_raid.addItem(path)
+            self.ui.select_raid.addItem(array)
 
 
     def print_raid_details(self):

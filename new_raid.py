@@ -49,7 +49,7 @@ class NewRaid(QWidget):
         self.raid_name = self.ui.raid_name.text()
         self.raid_level = self.ui.raid_level.currentText()
 
-        EventsManager.run_command('umount' + self.selected_devices.replace("\n", " "), shell=True)
+        EventsManager.run_command('umount ' + self.selected_devices.replace("\n", " "), shell=True)
 
         process = EventsManager.read_output('sudo mdadm --create --verbose --force ' + '/dev/'+self.raid_name + ' ' + '--level=' + self.raid_level + ' ' + '--raid-devices=' + str(self.selected_devices.count('\n')) + ' ' + self.selected_devices.replace("\n", " "), shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
@@ -63,15 +63,12 @@ class NewRaid(QWidget):
 
             user_input = dialog.new_notification(title="Warning", text="At least one selected device appears to contain an ext2fs file system." + "\nAre you sure that you want to continue?", icon="warning", buttons=["ok", "cancel"])
 
-            EventsManager.user_input_checking(user_input, process)
-            """
-            if user_input == QMessageBox.StandardButton.Ok:
-                process.stdin.write('y')
-                process.stdin.flush()
-            elif user_input == QMessageBox.StandardButton.Cancel:
-                process.stdin.write('n')
-                process.stdin.flush()
-            """
+            if EventsManager.user_input_checking(user_input, process):
+
+                print(process.stderr.readline())
+                print(process.stout.readline())
+
+
         if response.__contains__("chunk size defaults to 512K"):
 
             user_input = dialog.new_notification(title="Warning", text="The chunk size will be defaulted to 512K." + "\nAre you sure that you want to continue?", icon="critical", buttons=["ok", "cancel"])
