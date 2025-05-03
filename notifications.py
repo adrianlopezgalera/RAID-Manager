@@ -9,14 +9,15 @@ class Notifications(QMessageBox):
         self.setText(text)
 
         # Set icon
-        if icon == "information":
-            self.setIcon(QMessageBox.Icon.Information)
-        elif icon == "warning":
-            self.setIcon(QMessageBox.Icon.Warning)
-        elif icon == "question":
-            self.setIcon(QMessageBox.Icon.Question)
-        elif icon == "critical":
-            self.setIcon(QMessageBox.Icon.Critical)
+        match icon:
+            case "information":
+                self.setIcon(QMessageBox.Icon.Information)
+            case"warning":
+                self.setIcon(QMessageBox.Icon.Warning)
+            case "question":
+                self.setIcon(QMessageBox.Icon.Question)
+            case "critical":
+                self.setIcon(QMessageBox.Icon.Critical)
 
         # Set buttons
         if "ok" in buttons:

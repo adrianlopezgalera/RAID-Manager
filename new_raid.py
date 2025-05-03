@@ -1,5 +1,6 @@
 import subprocess
 
+from PyQt6.QtWidgets import QAbstractButton
 from PySide6.QtWidgets import QWidget, QMessageBox
 from UI.ui_new_raid import Ui_New_Raid
 from notifications import Notifications
@@ -34,8 +35,8 @@ class NewRaid(QWidget):
 
         self.selected_device = self.select_devices()
 
-        if (self.selected_device == "") or (self.selected_devices.__contains__(self.selected_device)):
-            print('')
+        if (self.selected_device == "") or (self.selected_devices.__contains__(self.selected_device)) or (self.selected_device.__eq__("/dev/")):
+           pass
         else:
             self.selected_devices += '\n' + self.selected_device
             self.ui.devices_path.setText(self.selected_devices)
@@ -51,51 +52,72 @@ class NewRaid(QWidget):
 
         EventsManager.run_command('umount ' + self.selected_devices.replace("\n", " "), shell=True)
 
-        process = EventsManager.read_output('sudo mdadm --create --verbose --force ' + '/dev/'+self.raid_name + ' ' + '--level=' + self.raid_level + ' ' + '--raid-devices=' + str(self.selected_devices.count('\n')) + ' ' + self.selected_devices.replace("\n", " "), shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        process = EventsManager.read_output('sudo mdadm --create --verbose --force ' + '/dev/'+self.raid_name + ' ' + '--level=' + self.raid_level + ' ' + '--raid-devices=' + str(self.selected_devices.count('\n')) + ' ' + self.selected_devices.replace("\n", " "))
 
         response = process.stderr.readline()
 
         print(response)
 
-        dialog = Notifications()
+        """
+        if response.__contains__("'1' is an unusual number of drives for an array"):
+            dialog.new_notification(title="Error", text="At least 2 raid-devices are needed for level 5.", icon="critical", buttons=["ok"])
+            
+            mdadm: Note: this array has metadata at the start and
+    may not be suitable as a boot device.  If you plan to
+    store '/boot' on this device please ensure that
+    your boot-loader understands md/v1.x metadata, or use
+    --metadata=0.90
+        """
+        if response.__contains__("chunk size defaults to 512K"):
+            dialog = Notifications()
 
-        if response.__contains__("ext2fs file system"):
+            user_input = dialog.new_notification(title="Warning", text="The chunk size will be defaulted to 512K." + "\nAre you sure that you want to continue?", icon="warning", buttons=["ok", "cancel"])
 
+            if EventsManager.user_input_checking(user_input, process):
+                lines = process.communicate()
+
+                for line in lines:
+                    print(line)
+
+                    if line.__contains__("is already in use"):
+                        dialog.new_notification(title="Error", text="The entered name is already in use", icon="critical", buttons=[])
+
+            #EventsManager.fill_raid_list(edit)
+        elif response.__contains__("ext2fs file system"):
+            dialog = Notifications()
             user_input = dialog.new_notification(title="Warning", text="At least one selected device appears to contain an ext2fs file system." + "\nAre you sure that you want to continue?", icon="warning", buttons=["ok", "cancel"])
 
             if EventsManager.user_input_checking(user_input, process):
 
-                print(process.stderr.readline())
-                print(process.stout.readline())
+                lines = process.communicate()
 
+                for line in lines:
+                    print(line)
 
-        if response.__contains__("chunk size defaults to 512K"):
+                    if line.__contains__("is already in use"):
+                        dialog.new_notification(title="Error", text="The entered name is already in use", icon="critical", buttons=[])
 
-            user_input = dialog.new_notification(title="Warning", text="The chunk size will be defaulted to 512K." + "\nAre you sure that you want to continue?", icon="critical", buttons=["ok", "cancel"])
+        elif response.__contains__("at least 2 raid-devices needed for level 5"):
+            dialog = Notifications()
 
-            EventsManager.user_input_checking(user_input, process)
-
-            """
-            if user_input == QMessageBox.StandardButton.Ok:
-                process.stdin.write('y')
-                process.stdin.flush()
-            elif user_input == QMessageBox.StandardButton.Cancel:
-                process.stdin.write('n')
-                process.stdin.flush()
-            """
-        
-        if response.__contains__("at least 2 raid-devices needed for level 5"):
             dialog.new_notification(title="Error", text="At least 2 raid-devices are needed for level 5.", icon="critical", buttons=["ok"])
 
-        if response.__contains__("at least 4 raid-devices needed for level 6"):
+        elif response.__contains__("at least 4 raid-devices needed for level 6"):
+            dialog = Notifications()
+
             dialog.new_notification(title="Error", text="At least 3 raid-devices are needed for level 6.", icon="critical", buttons=["ok"])
 
-        if response.__contains__("invalid number of raid devices"):
+        elif response.__contains__("invalid number of raid devices"):
+            dialog = Notifications()
+
             dialog.new_notification(title="Error", text="Invalid number of raid devices.", icon="critical", buttons=["ok"])
 
-        if response.__contains__("partition table exists"):
-            dialog.new_notification(title="Error", text="There is already a partition table in: " + self.selected_devices, icon="critical", buttons=["ok"])
+        elif response.__contains__("partition table exists"):
+            dialog = Notifications()
 
+            dialog.new_notification(title="Error", text="There is already a partition table in: " + self.selected_devices, icon="critical", buttons=["ok"])
+        else:
+            pass
 
         # Metadatos para crear RAID sin interrupciones: --metadata = 0.90 - -run
         # Metadatos de procesos: shell=True, check=True, stdout=subprocess.PIPE, universal_newlines=True

@@ -13,6 +13,7 @@ class RaidManager(QMainWindow):
         super().__init__(parent)
         self.ui = Ui_RAID_Manager()
         self.ui.setupUi(self)
+        self.show()
 
         # Center window:
 
@@ -48,5 +49,5 @@ class RaidManager(QMainWindow):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     main_window = RaidManager()
-    main_window.show()
+    #main_window.show()
     sys.exit(app.exec())

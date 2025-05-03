@@ -29,12 +29,12 @@ class Ui_Edit(object):
         Edit.setLocale(QLocale(QLocale.English, QLocale.UnitedStates))
         self.formLayoutWidget = QWidget(Edit)
         self.formLayoutWidget.setObjectName(u"formLayoutWidget")
-        self.formLayoutWidget.setGeometry(QRect(40, 40, 621, 151))
+        self.formLayoutWidget.setGeometry(QRect(40, 40, 621, 132))
         self.raid_selector = QFormLayout(self.formLayoutWidget)
         self.raid_selector.setObjectName(u"raid_selector")
         self.raid_selector.setSizeConstraint(QLayout.SizeConstraint.SetDefaultConstraint)
-        self.raid_selector.setHorizontalSpacing(6)
-        self.raid_selector.setVerticalSpacing(20)
+        self.raid_selector.setHorizontalSpacing(0)
+        self.raid_selector.setVerticalSpacing(40)
         self.raid_selector.setContentsMargins(0, 0, 0, 0)
         self.select_raid_label = QLabel(self.formLayoutWidget)
         self.select_raid_label.setObjectName(u"select_raid_label")
@@ -46,30 +46,33 @@ class Ui_Edit(object):
 
         self.raid_selector.setWidget(0, QFormLayout.FieldRole, self.select_raid)
 
-        self.apply_button = QPushButton(self.formLayoutWidget)
-        self.apply_button.setObjectName(u"apply_button")
+        self.selected_raid = QLabel(self.formLayoutWidget)
+        self.selected_raid.setObjectName(u"selected_raid")
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.selected_raid.sizePolicy().hasHeightForWidth())
+        self.selected_raid.setSizePolicy(sizePolicy)
+        font = QFont()
+        font.setPointSize(18)
+        self.selected_raid.setFont(font)
 
-        self.raid_selector.setWidget(1, QFormLayout.FieldRole, self.apply_button)
+        self.raid_selector.setWidget(1, QFormLayout.FieldRole, self.selected_raid)
 
         self.selected_raid_label = QLabel(self.formLayoutWidget)
         self.selected_raid_label.setObjectName(u"selected_raid_label")
 
-        self.raid_selector.setWidget(2, QFormLayout.LabelRole, self.selected_raid_label)
-
-        self.selected_raid = QLabel(self.formLayoutWidget)
-        self.selected_raid.setObjectName(u"selected_raid")
-
-        self.raid_selector.setWidget(2, QFormLayout.FieldRole, self.selected_raid)
+        self.raid_selector.setWidget(1, QFormLayout.LabelRole, self.selected_raid_label)
 
         self.row_1 = QWidget(Edit)
         self.row_1.setObjectName(u"row_1")
         self.row_1.setGeometry(QRect(30, 250, 628, 43))
         self.horizontalLayout = QHBoxLayout(self.row_1)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.change_level_button = QPushButton(self.row_1)
-        self.change_level_button.setObjectName(u"change_level_button")
+        self.change_name_button = QPushButton(self.row_1)
+        self.change_name_button.setObjectName(u"change_name_button")
 
-        self.horizontalLayout.addWidget(self.change_level_button)
+        self.horizontalLayout.addWidget(self.change_name_button)
 
         self.add_drive_button = QPushButton(self.row_1)
         self.add_drive_button.setObjectName(u"add_drive_button")
@@ -86,6 +89,11 @@ class Ui_Edit(object):
         self.row_2.setGeometry(QRect(30, 300, 628, 43))
         self.horizontalLayout_2 = QHBoxLayout(self.row_2)
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
+        self.change_level_button = QPushButton(self.row_2)
+        self.change_level_button.setObjectName(u"change_level_button")
+
+        self.horizontalLayout_2.addWidget(self.change_level_button)
+
         self.stop_button = QPushButton(self.row_2)
         self.stop_button.setObjectName(u"stop_button")
 
@@ -175,10 +183,10 @@ class Ui_Edit(object):
 
         self.cancel_button = QPushButton(Edit)
         self.cancel_button.setObjectName(u"cancel_button")
-        self.cancel_button.setGeometry(QRect(580, 430, 80, 23))
+        self.cancel_button.setGeometry(QRect(570, 430, 80, 23))
         self.assemble_button = QPushButton(Edit)
         self.assemble_button.setObjectName(u"assemble_button")
-        self.assemble_button.setGeometry(QRect(240, 360, 199, 23))
+        self.assemble_button.setGeometry(QRect(260, 380, 171, 31))
 
         self.retranslateUi(Edit)
 
@@ -188,12 +196,12 @@ class Ui_Edit(object):
     def retranslateUi(self, Edit):
         Edit.setWindowTitle(QCoreApplication.translate("Edit", u"Edit a RAID", None))
         self.select_raid_label.setText(QCoreApplication.translate("Edit", u"Select RAID:", None))
-        self.apply_button.setText(QCoreApplication.translate("Edit", u"Apply", None))
-        self.selected_raid_label.setText(QCoreApplication.translate("Edit", u"Selected RAID:", None))
         self.selected_raid.setText("")
-        self.change_level_button.setText(QCoreApplication.translate("Edit", u"Change level", None))
+        self.selected_raid_label.setText(QCoreApplication.translate("Edit", u"Selected RAID:", None))
+        self.change_name_button.setText(QCoreApplication.translate("Edit", u"Change name", None))
         self.add_drive_button.setText(QCoreApplication.translate("Edit", u"Add drive", None))
         self.remove_drive_button.setText(QCoreApplication.translate("Edit", u"Remove drive", None))
+        self.change_level_button.setText(QCoreApplication.translate("Edit", u"Change level", None))
         self.stop_button.setText(QCoreApplication.translate("Edit", u"Stop", None))
         self.delete_button.setText(QCoreApplication.translate("Edit", u"Delete", None))
         self.cancel_button.setText(QCoreApplication.translate("Edit", u"Cancel", None))

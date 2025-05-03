@@ -7,37 +7,38 @@ from events_manager import EventsManager
 
 class Info(QWidget):
 
+    selected_raid = ""
+
     def __init__(self):
         super().__init__(parent=None)
         self.ui = Ui_Info()
         self.ui.setupUi(self)
 
         # Executing functions:
-        self.print_raid_list()
+        EventsManager.fill_raid_list(window=self)
+        self.ui.select_raid.currentIndexChanged.connect(lambda: self.print_raid_details())
+
+        # Default values:
+        self.print_raid_details()
 
         # Connecting buttons to events:
         self.ui.OK_button.clicked.connect(self.close)
-        self.ui.apply_button.clicked.connect(lambda: self.print_raid_details())
+        #self.ui.apply_button.clicked.connect(lambda: self.print_raid_details())
 
-    def print_raid_list(self):
-
-        arrays = EventsManager.fill_raid_list()
-
-        for array in arrays:
-            self.ui.select_raid.addItem(array)
-
+    def set_selected_raid(self):
+        self.selected_raid = self.ui.select_raid.currentText()
 
     def print_raid_details(self):
 
         # Taking selected RAID:
 
-        raid = self.ui.select_raid.currentText()
+        self.set_selected_raid()
 
         # Filling fields:
 
-        arrays = EventsManager.run_command(['sudo', 'mdadm', '--detail', raid], capture_output=True, text=True).stdout.splitlines()
+        arrays = EventsManager.run_command(['sudo', 'mdadm', '--detail', self.selected_raid], capture_output=True, text=True).stdout.splitlines()
 
-        self.ui.raid_path.setText(raid)
+        self.ui.raid_path.setText(self.selected_raid)
 
         for line in arrays:
 

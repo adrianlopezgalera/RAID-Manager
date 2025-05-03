@@ -15,9 +15,9 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QComboBox, QFormLayout, QHBoxLayout,
-    QLabel, QLayout, QPushButton, QSizePolicy,
-    QWidget)
+from PySide6.QtWidgets import (QApplication, QComboBox, QFormLayout, QFrame,
+    QHBoxLayout, QLabel, QLayout, QPushButton,
+    QSizePolicy, QWidget)
 
 class Ui_Info(object):
     def setupUi(self, Info):
@@ -27,7 +27,7 @@ class Ui_Info(object):
         Info.setLocale(QLocale(QLocale.English, QLocale.UnitedStates))
         self.formLayoutWidget = QWidget(Info)
         self.formLayoutWidget.setObjectName(u"formLayoutWidget")
-        self.formLayoutWidget.setGeometry(QRect(40, 40, 631, 281))
+        self.formLayoutWidget.setGeometry(QRect(40, 40, 631, 223))
         self.raid_details = QFormLayout(self.formLayoutWidget)
         self.raid_details.setObjectName(u"raid_details")
         self.raid_details.setSizeConstraint(QLayout.SizeConstraint.SetDefaultConstraint)
@@ -94,10 +94,12 @@ class Ui_Info(object):
 
         self.raid_details.setWidget(6, QFormLayout.FieldRole, self.raid_devices)
 
-        self.apply_button = QPushButton(self.formLayoutWidget)
-        self.apply_button.setObjectName(u"apply_button")
+        self.line = QFrame(self.formLayoutWidget)
+        self.line.setObjectName(u"line")
+        self.line.setFrameShape(QFrame.Shape.HLine)
+        self.line.setFrameShadow(QFrame.Shadow.Sunken)
 
-        self.raid_details.setWidget(1, QFormLayout.FieldRole, self.apply_button)
+        self.raid_details.setWidget(1, QFormLayout.SpanningRole, self.line)
 
         self.OK_button = QPushButton(Info)
         self.OK_button.setObjectName(u"OK_button")
@@ -108,7 +110,7 @@ class Ui_Info(object):
         self.OK_button.setContextMenuPolicy(Qt.ContextMenuPolicy.ActionsContextMenu)
         self.row1 = QWidget(Info)
         self.row1.setObjectName(u"row1")
-        self.row1.setGeometry(QRect(30, 350, 631, 33))
+        self.row1.setGeometry(QRect(40, 310, 631, 33))
         self.horizontalLayout = QHBoxLayout(self.row1)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.active_label = QLabel(self.row1)
@@ -133,7 +135,7 @@ class Ui_Info(object):
 
         self.row2 = QWidget(Info)
         self.row2.setObjectName(u"row2")
-        self.row2.setGeometry(QRect(30, 390, 631, 33))
+        self.row2.setGeometry(QRect(40, 350, 631, 33))
         self.horizontalLayout_3 = QHBoxLayout(self.row2)
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
         self.failed_label = QLabel(self.row2)
@@ -175,7 +177,6 @@ class Ui_Info(object):
         self.raid_state.setText("")
         self.raid_devices_label.setText(QCoreApplication.translate("Info", u"RAID Devices:", None))
         self.raid_devices.setText("")
-        self.apply_button.setText(QCoreApplication.translate("Info", u"Apply", None))
         self.OK_button.setText(QCoreApplication.translate("Info", u"OK", None))
         self.active_label.setText(QCoreApplication.translate("Info", u"Active devices:", None))
         self.active_devices.setText("")

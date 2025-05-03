@@ -143,6 +143,11 @@ class EventsManager:
         return type(class_name)
 
     @staticmethod
+    def print_selected_raid(window):
+        #window.set_selected_raid()
+        window.ui.selected_raid.setText(window.selected_raid)
+
+    @staticmethod
     def user_input_checking(dialog, process):
 
         if dialog == QMessageBox.StandardButton.Ok:
@@ -159,24 +164,22 @@ class EventsManager:
             return False
 
     @staticmethod
-    def fill_raid_list():
+    def fill_raid_list(window):
+
+        window.ui.select_raid.clear()
+
         arrays = EventsManager.run_command(['sudo', 'mdadm', '--detail' , '--scan'], capture_output=True, text=True).stdout.splitlines()
 
-        array_list = ""
-
         for array in arrays:
-            array_list += array[array.find('/'): array.find(' metadata')] + '\n'
-
-        return array_list.splitlines()
+            window.ui.select_raid.addItem(array[array.find('/'): array.find(' metadata')])
 
     @staticmethod
     def fill_device_list(window):
 
-        result = EventsManager.run_command(['lsblk', '-o', 'NAME,SIZE,TYPE,FSTYPE,MOUNTPOINT', '-l', '--noheadings'], capture_output=True, text=True)
+        window.ui.selector.clear()
 
-        output = result.stdout
+        devices = EventsManager.run_command(['lsblk', '-o', 'NAME,SIZE,TYPE,FSTYPE,MOUNTPOINT', '-l', '--noheadings'], capture_output=True, text=True).stdout.splitlines()
 
-        devices = output.splitlines()
         for device in devices:
             device_info = device.split()
             if len(device_info) >= 4:
@@ -384,7 +387,7 @@ class EventsManager:
                                             icon="critical", buttons=["ok"])
 
     @staticmethod
-    def assemble_dialog():
+    def assemble_dialog(window):
             process = EventsManager.read_output('sudo mdadm --assemble --scan')
 
             started_raid = ""
@@ -392,19 +395,18 @@ class EventsManager:
             output = process.stderr.readlines()
 
             for line in output:
-
                 started_raid += line + "\n"
 
             notification = Notifications()
             notification.new_notification(title="Information",
-                                          text=started_raid,
-                                          icon="information", buttons=["ok"])
-
+                                              text=started_raid,
+                                              icon="information", buttons=["ok"])
+            EventsManager.fill_raid_list(window)
 
     @staticmethod
-    def stop_dialog(selected_raid):
-        if EventsManager.check_if_selected_raid(selected_raid):
-            process = EventsManager.read_output('sudo mdadm --stop ' + selected_raid)
+    def stop_dialog(window):
+        if EventsManager.check_if_selected_raid(window.get_selected_raid()):
+            process = EventsManager.read_output('sudo mdadm --stop ' + window.get_selected_raid())
 
             output = process.stderr.readline()
             print(output)
@@ -413,9 +415,31 @@ class EventsManager:
                 notification = Notifications()
                 notification.new_notification(title="Error",
                                               text="The RAID is already stopped",
-                                              icon="error", buttons=["ok"])
+                                              icon="critical", buttons=["ok"])
 
             if output.__contains__("stopped"):
 
                 notification = Notifications()
-                notification.success_notification(selected_raid, "stopped")
+                notification.success_notification(window.get_selected_raid(), "stopped")
+                EventsManager.fill_raid_list(window)
+
+    @staticmethod
+    def delete_dialog(window):
+        if EventsManager.check_if_selected_raid((window.get_selected_raid())):
+            EventsManager.run_command('umount ' + window.get_selected_raid(), shell=True)
+            EventsManager.run_command('sudo mdadm --stop ' + window.get_selected_raid(), shell=True)
+            process = EventsManager.read_output('sudo mdadm --remove ' + window.get_selected_raid())
+
+            output = process.stderr.readline()
+            print(output)
+
+            if output.__contains__("No such file or directory"):
+                notification = Notifications()
+                notification.new_notification(title="Error",
+                                              text="The RAID is already deleted",
+                                              icon="critical", buttons=["ok"])
+
+            if output.__contains__("deleted"):
+                notification = Notifications()
+                notification.success_notification(window.get_selected_raid(), "deleted")
+                EventsManager.fill_raid_list(window)
