@@ -24,6 +24,13 @@ class Ui_New_Raid(object):
         if not New_Raid.objectName():
             New_Raid.setObjectName(u"New_Raid")
         New_Raid.resize(720, 480)
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(New_Raid.sizePolicy().hasHeightForWidth())
+        New_Raid.setSizePolicy(sizePolicy)
+        New_Raid.setMinimumSize(QSize(720, 480))
+        New_Raid.setMaximumSize(QSize(720, 480))
         New_Raid.setLocale(QLocale(QLocale.English, QLocale.UnitedStates))
         self.formLayoutWidget = QWidget(New_Raid)
         self.formLayoutWidget.setObjectName(u"formLayoutWidget")
@@ -101,6 +108,9 @@ class Ui_New_Raid(object):
     def retranslateUi(self, New_Raid):
         New_Raid.setWindowTitle(QCoreApplication.translate("New_Raid", u"New RAID", None))
         self.raid_name_label.setText(QCoreApplication.translate("New_Raid", u"RAID Name:", None))
+#if QT_CONFIG(tooltip)
+        self.raid_name.setToolTip(QCoreApplication.translate("New_Raid", u"<html><head/><body><p>By default, the name of a RAID uses the 'md' prefix.</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
 #if QT_CONFIG(statustip)
         self.raid_name.setStatusTip("")
 #endif // QT_CONFIG(statustip)

@@ -28,6 +28,10 @@ class Notifications(QMessageBox):
             self.addButton(QMessageBox.StandardButton.Yes)
         if "no" in buttons:
             self.addButton(QMessageBox.StandardButton.No)
+        if "apply" in buttons:
+            self.addButton(QMessageBox.StandardButton.Apply)
+        if "abort" in buttons:
+            self.addButton(QMessageBox.StandardButton.Abort)
 
         return self.exec()
 

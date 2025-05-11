@@ -1,6 +1,8 @@
 import sys
 
 from PySide6.QtWidgets import QApplication, QMainWindow
+
+from about import About
 from edit import Edit
 from events_manager import EventsManager
 from info import Info
@@ -26,6 +28,7 @@ class RaidManager(QMainWindow):
             new_raid = NewRaid()
             edit = Edit()
             info = Info()
+            about = About()
 
             # Connecting buttons to events:
 
@@ -36,6 +39,9 @@ class RaidManager(QMainWindow):
             #self.ui.button1_new.clicked.connect(lambda: EventsManager.create_object(NewRaid().show()))
             #self.ui.button2_edit.clicked.connect(lambda: EventsManager.create_object(Edit().show()))
             #self.ui.button3_info.clicked.connect(lambda: EventsManager.create_object(Info().show()))
+
+            self.ui.actionExit.triggered.connect(lambda: EventsManager.close())
+            self.ui.actionAbout.triggered.connect(lambda: EventsManager.new_window(about))
 
         elif EventsManager.has_policy():
             EventsManager.install_program('mdadm')
@@ -49,5 +55,4 @@ class RaidManager(QMainWindow):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     main_window = RaidManager()
-    #main_window.show()
     sys.exit(app.exec())

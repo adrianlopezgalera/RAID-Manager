@@ -1,6 +1,7 @@
 import subprocess
 
 from PyQt6.QtWidgets import QAbstractButton
+from PySide6 import QtCore
 from PySide6.QtWidgets import QWidget, QMessageBox
 from UI.ui_new_raid import Ui_New_Raid
 from notifications import Notifications
@@ -18,6 +19,12 @@ class NewRaid(QWidget):
         super().__init__(parent=None)
         self.ui = Ui_New_Raid()
         self.ui.setupUi(self)
+
+        # Element properties:
+        self.ui.raid_level.setItemData(0, "Level 0: Striped volume, no parity information, redundancy, or fault tolerance.", role=QtCore.Qt.ItemDataRole.ToolTipRole)
+        self.ui.raid_level.setItemData(1, "Level 1: Mirror volume, total redundancy without parity.", role=QtCore.Qt.ItemDataRole.ToolTipRole)
+        self.ui.raid_level.setItemData(2, "Level 5: Block-level striped volume with parity. The array tolerates 1 faulty disk.", role=QtCore.Qt.ItemDataRole.ToolTipRole)
+        self.ui.raid_level.setItemData(3, "Level 6: Block-level striped volume with parity. The array tolerates 2 faulty disks.", role=QtCore.Qt.ItemDataRole.ToolTipRole)
 
         # Executing functions:
         EventsManager.fill_device_list(self)
@@ -52,11 +59,13 @@ class NewRaid(QWidget):
 
         EventsManager.run_command('umount ' + self.selected_devices.replace("\n", " "), shell=True)
 
-        process = EventsManager.read_output('sudo mdadm --create --verbose --force ' + '/dev/'+self.raid_name + ' ' + '--level=' + self.raid_level + ' ' + '--raid-devices=' + str(self.selected_devices.count('\n')) + ' ' + self.selected_devices.replace("\n", " "))
+        process = EventsManager.read_output('sudo mdadm --create --verbose --force ' + '/dev/md/'+self.raid_name + ' --name='+self.raid_name + ' --hostname=$hostname  --level=' + self.raid_level + ' --raid-devices=' + str(self.selected_devices.count('\n')) + ' ' + self.selected_devices.replace("\n", " "))
 
         response = process.stderr.readline()
 
         print(response)
+
+        flag = True
 
         """
         if response.__contains__("'1' is an unusual number of drives for an array"):
@@ -80,7 +89,8 @@ class NewRaid(QWidget):
                     print(line)
 
                     if line.__contains__("is already in use"):
-                        dialog.new_notification(title="Error", text="The entered name is already in use", icon="critical", buttons=[])
+                        dialog.new_notification(title="Error", text="The entered name (" + self.raid_name + ") is already in use. Please, enter another name", icon="critical", buttons=[])
+                        flag = False
 
             #EventsManager.fill_raid_list(edit)
         elif response.__contains__("ext2fs file system"):
@@ -95,59 +105,52 @@ class NewRaid(QWidget):
                     print(line)
 
                     if line.__contains__("is already in use"):
-                        dialog.new_notification(title="Error", text="The entered name is already in use", icon="critical", buttons=[])
+                        dialog = Notifications()
+                        dialog.new_notification(title="Error", text="The entered name is already in use", icon="critical", buttons=["ok"])
+                        flag = False
+
+
+
 
         elif response.__contains__("at least 2 raid-devices needed for level 5"):
             dialog = Notifications()
 
             dialog.new_notification(title="Error", text="At least 2 raid-devices are needed for level 5.", icon="critical", buttons=["ok"])
+            flag = False
+
 
         elif response.__contains__("at least 4 raid-devices needed for level 6"):
             dialog = Notifications()
 
-            dialog.new_notification(title="Error", text="At least 3 raid-devices are needed for level 6.", icon="critical", buttons=["ok"])
+            dialog.new_notification(title="Error", text="At least 4 raid-devices are needed for level 6.", icon="critical", buttons=["ok"])
+            flag = False
+
 
         elif response.__contains__("invalid number of raid devices"):
             dialog = Notifications()
 
             dialog.new_notification(title="Error", text="Invalid number of raid devices.", icon="critical", buttons=["ok"])
+            flag = False
+
 
         elif response.__contains__("partition table exists"):
             dialog = Notifications()
 
             dialog.new_notification(title="Error", text="There is already a partition table in: " + self.selected_devices, icon="critical", buttons=["ok"])
+            flag = False
+
         else:
             pass
 
+        if flag:
+            #EventsManager.run_command('sudo mdadm --detail --scan --verbose | sudo tee -a /etc/mdadm/mdadm.conf', shell=True)
+
+            dialog = Notifications()
+            user_input = dialog.new_notification(title="Information", text="RAID created correctly. To use the created raid, you must restart the system. Press 'Apply' to restart now or click 'cancel' to restart later.", icon="information",
+                                    buttons=["apply", "cancel"])
+
+            if user_input == QMessageBox.StandardButton.Apply:
+                EventsManager.restart_system()
+
         # Metadatos para crear RAID sin interrupciones: --metadata = 0.90 - -run
         # Metadatos de procesos: shell=True, check=True, stdout=subprocess.PIPE, universal_newlines=True
-
-"""
-    def fill_device_list(self):
-
-        result = EventsManager.run_command(['lsblk', '-o', 'NAME,SIZE,TYPE,FSTYPE,MOUNTPOINT', '-l', '--noheadings'], capture_output=True, text=True)
-
-        output = result.stdout
-
-        devices = output.splitlines()
-        for device in devices:
-            device_info = device.split()
-            if len(device_info) >= 4:
-                device_name = device_info[0]
-                device_size = device_info[1]
-                device_type = device_info[2]
-                device_fstype = device_info[3]
-
-                if device_fstype == "linux_raid_member":
-                    continue
-
-                if len(device_info) == 5:
-                    device_mount_point = device_info[4]
-
-                    if (len(device_mount_point) == 1) or (device_mount_point.__contains__("/home")) or (device_mount_point.__contains__("/boot/efi")):
-                        continue
-
-                if device_type == "part":
-                    self.ui.devices.addItem(f"{device_name} - {device_size} ({device_fstype})")
-
-"""

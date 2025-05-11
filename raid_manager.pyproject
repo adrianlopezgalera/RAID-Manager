@@ -6,6 +6,7 @@
         "UI/new_raid.ui",
         "UI/dialog.ui",
         "UI/info.ui",
-        "UI/edit.ui"
+        "UI/edit.ui",
+        "UI/about.ui"
     ]
 }

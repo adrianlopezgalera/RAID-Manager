@@ -1,6 +1,4 @@
-import subprocess
-
-from PySide6.QtWidgets import QWidget, QMessageBox
+from PySide6.QtWidgets import QWidget
 from UI.ui_info import Ui_Info
 from events_manager import EventsManager
 
@@ -15,32 +13,41 @@ class Info(QWidget):
         self.ui.setupUi(self)
 
         # Executing functions:
-        EventsManager.fill_raid_list(window=self)
+        EventsManager.fill_raid_list(self)
         self.ui.select_raid.currentIndexChanged.connect(lambda: self.print_raid_details())
+
+        # Update available RAIDs:
+
+
+        if self.isVisible():
+            EventsManager.fill_raid_list(self)
 
         # Default values:
         self.print_raid_details()
 
         # Connecting buttons to events:
         self.ui.OK_button.clicked.connect(self.close)
-        #self.ui.apply_button.clicked.connect(lambda: self.print_raid_details())
+        self.ui.export_button.clicked.connect(lambda: EventsManager.export_selected_raid_info(self))
 
     def set_selected_raid(self):
         self.selected_raid = self.ui.select_raid.currentText()
 
     def print_raid_details(self):
 
-        # Taking selected RAID:
+        # Take selected RAID:
 
         self.set_selected_raid()
 
-        # Filling fields:
+        # Fill fields:
 
-        arrays = EventsManager.run_command(['sudo', 'mdadm', '--detail', self.selected_raid], capture_output=True, text=True).stdout.splitlines()
+        arrays = EventsManager.get_selected_raid_info(self.selected_raid).splitlines()
 
         self.ui.raid_path.setText(self.selected_raid)
 
         for line in arrays:
+
+            if line.__contains__('Name'):
+                self.ui.raid_name.setText(line[21:])
 
             if line.__contains__('Raid Level'):
 
@@ -61,12 +68,18 @@ class Info(QWidget):
                     state += "Active "
                 if line.__contains__('clean'):
                     state += "Clean "
+                if line.__contains__('FAILED'):
+                    state += "Failed "
                 if line.__contains__('resyncing'):
                     state += "Resyncing "
                 if line.__contains__('degraded'):
                     state += "Degraded "
                 if line.__contains__('recovering'):
                     state += "Recovering "
+
+                if state.__contains__("Failed"):
+                    self.ui.working_devices.setText("0")
+                    self.ui.raid_name.setText("None")
 
                 self.ui.raid_state.setText(state)
 
