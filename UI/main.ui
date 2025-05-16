@@ -71,7 +71,7 @@
         </font>
        </property>
        <property name="cursor">
-        <cursorShape>PointingHandCursor</cursorShape>
+        <cursorShape>ArrowCursor</cursorShape>
        </property>
        <property name="toolTip">
         <string>It creates a new RAID with selected devices</string>
@@ -87,7 +87,7 @@
      <item>
       <widget class="QPushButton" name="button2_edit">
        <property name="cursor">
-        <cursorShape>PointingHandCursor</cursorShape>
+        <cursorShape>ArrowCursor</cursorShape>
        </property>
        <property name="text">
         <string>Edit an existing RAID...</string>
@@ -103,7 +103,7 @@
      <item>
       <widget class="QPushButton" name="button3_info">
        <property name="cursor">
-        <cursorShape>PointingHandCursor</cursorShape>
+        <cursorShape>ArrowCursor</cursorShape>
        </property>
        <property name="text">
         <string>Get info about an existing RAID...</string>
@@ -135,7 +135,7 @@
     <property name="title">
      <string>Settings</string>
     </property>
-    <addaction name="actionOptons"/>
+    <addaction name="actionOptions"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -158,9 +158,9 @@
     <string>About</string>
    </property>
   </action>
-  <action name="actionOptons">
+  <action name="actionOptions">
    <property name="text">
-    <string>Optons</string>
+    <string>Options</string>
    </property>
   </action>
  </widget>

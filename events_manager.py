@@ -1,7 +1,6 @@
 import os
 import subprocess
 import sys
-import time
 
 from PySide6.QtWidgets import QMessageBox, QFileDialog
 from dialogs import Dialogs
@@ -71,6 +70,9 @@ class EventsManager:
                     EventsManager.restart_app()
                 except subprocess.CalledProcessError as e:
                     print(f"Error installing {program_name}: {e}")
+            else:
+                notification.error_notification(program_name)
+
         else:
             EventsManager.close()
 
@@ -121,6 +123,7 @@ class EventsManager:
                 os.remove(os.path.join(file_path, file_name))
 
                 # Inform the user:
+                notification = Notifications()
                 notification.success_notification('The policy', "installed")
 
                 # Restart the application:
@@ -172,6 +175,7 @@ class EventsManager:
         arrays = EventsManager.run_command(['sudo', 'mdadm', '--detail' , '--scan'], capture_output=True, text=True).stdout.splitlines()
 
         if not arrays:
+            window.ui.select_raid.setPlaceholderText("No RAID available")
             window.ui.select_raid.setToolTip("No RAID available")
         else:
             for array in arrays:
@@ -279,6 +283,8 @@ class EventsManager:
 
             dialog.ui.selector.setEnabled(True)
             dialog.ui.text.setEnabled(False)
+            dialog.ui.selector_mode.setEnabled(False)
+            dialog.ui.selector_mode.setHidden(True)
 
             # Filling selector:
 
@@ -348,17 +354,22 @@ mdadm --assemble --update=name --name=2 /dev/md1 /dev/sdb8 /dev/sda8
 
             dialog.setWindowTitle("Add drive to RAID")
             dialog.ui.label.setText("Select a drive to add:")
+            dialog.ui.label_mode.setText("Starting drive as:")
             dialog.ui.current_attribute_label.setText("Current RAID Path:")
             dialog.ui.current_attribute.setText(selected_raid)
 
-            # Enabling selector:
+            # Enabling selectors:
 
             dialog.ui.selector.setEnabled(True)
+            dialog.ui.selector_mode.setEnabled(True)
             dialog.ui.text.setEnabled(False)
 
-            # Filling selector:
+            # Filling selectors:
 
             EventsManager.fill_device_list(dialog)
+            dialog.ui.selector_mode.addItem("Active")
+            dialog.ui.selector_mode.addItem("Spare")
+
 
             # Actions:
 
@@ -367,17 +378,26 @@ mdadm --assemble --update=name --name=2 /dev/md1 /dev/sdb8 /dev/sda8
             dialog.ui.ok_button.clicked.connect(lambda: add_drive_action())
 
             def add_drive_action():
-                selected_drive = '/dev/' + dialog.ui.selector.currentText()[0: dialog.ui.selector.currentText().find('-')].strip()
 
-                process = EventsManager.read_output('sudo mdadm --manage ' + selected_raid + ' --add ' + selected_drive)
+                selected_option = dialog.ui.selector_mode.currentText()
 
-                response = process.stderr.readline()
+                match selected_option:
+                    case "Active":
+                        selected_drive = '/dev/' + dialog.ui.selector.currentText()[0: dialog.ui.selector.currentText().find('-')].strip()
 
-                print(response)
+                        process = EventsManager.read_output('sudo mdadm --manage ' + selected_raid + ' --add ' + selected_drive)
 
-                if response.__contains__("not large enough to join array"):
-                    notification = Notifications()
-                    notification.new_notification(title="Error", text="The selected drive (" + selected_drive + ") is not large enough to join array", icon="critical", buttons=["ok"])
+                        response = process.stderr.readline()
+
+                        if response.__contains__("not large enough to join array"):
+                            notification = Notifications()
+                            notification.new_notification(title="Error",
+                                                          text="The selected drive (" + selected_drive + ") is not large enough to join array",
+                                                          icon="critical", buttons=["ok"])
+                    case "Spare":
+                        pass
+
+
 
 
     @staticmethod
@@ -396,6 +416,8 @@ mdadm --assemble --update=name --name=2 /dev/md1 /dev/sdb8 /dev/sda8
 
             dialog.ui.selector.setEnabled(True)
             dialog.ui.text.setEnabled(False)
+            dialog.ui.selector_mode.setEnabled(False)
+            dialog.ui.selector_mode.setHidden(True)
 
             # Filling selector:
 
@@ -443,14 +465,13 @@ mdadm --assemble --update=name --name=2 /dev/md1 /dev/sdb8 /dev/sda8
         for line in output:
             started_raid += line + "\n"
 
-        if started_raid.__ne__(''):
-
+        if started_raid.__eq__('') or started_raid.__contains__("mdadm: No arrays found in config file or automatically"):
             notification = Notifications()
-            notification.new_notification(title="Information", text=started_raid, icon="information", buttons=["ok"])
+            notification.new_notification(title="Information", text="There are no RAIDs available to assemble.", icon="information", buttons=["ok"])
             EventsManager.fill_raid_list(window)
         else:
             notification = Notifications()
-            notification.new_notification(title="Warning",text="There are no RAIDs available to assemble.", icon="warning", buttons=["ok"])
+            notification.new_notification(title="Information", text=started_raid[6:], icon="information", buttons=["ok"])
             EventsManager.fill_raid_list(window)
 
     @staticmethod

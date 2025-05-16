@@ -22,7 +22,7 @@ class Edit(QWidget):
 
         # Default values:
         self.set_selected_raid()
-        self.ui.selected_raid.setText(self.ui.select_raid.currentText())
+        #self.ui.selected_raid.setText(self.ui.select_raid.currentText())
 
         # Connecting buttons to events:
         self.ui.cancel_button.clicked.connect(self.close)
@@ -43,4 +43,4 @@ class Edit(QWidget):
 
     def print_selected_raid(self):
         self.set_selected_raid()
-        self.ui.selected_raid.setText(self.selected_raid)
+        #self.ui.selected_raid.setText(self.selected_raid)

@@ -410,7 +410,7 @@
   <widget class="QPushButton" name="export_button">
    <property name="geometry">
     <rect>
-     <x>433</x>
+     <x>270</x>
      <y>440</y>
      <width>80</width>
      <height>23</height>
@@ -423,7 +423,7 @@
   <widget class="QComboBox" name="export_selector">
    <property name="geometry">
     <rect>
-     <x>343</x>
+     <x>180</x>
      <y>440</y>
      <width>79</width>
      <height>23</height>
@@ -443,7 +443,7 @@
   <widget class="QLabel" name="export_label">
    <property name="geometry">
     <rect>
-     <x>240</x>
+     <x>80</x>
      <y>440</y>
      <width>91</width>
      <height>21</height>

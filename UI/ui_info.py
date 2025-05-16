@@ -225,15 +225,15 @@ class Ui_Info(object):
 
         self.export_button = QPushButton(Info)
         self.export_button.setObjectName(u"export_button")
-        self.export_button.setGeometry(QRect(433, 440, 80, 23))
+        self.export_button.setGeometry(QRect(270, 440, 80, 23))
         self.export_selector = QComboBox(Info)
         self.export_selector.addItem("")
         self.export_selector.addItem("")
         self.export_selector.setObjectName(u"export_selector")
-        self.export_selector.setGeometry(QRect(343, 440, 79, 23))
+        self.export_selector.setGeometry(QRect(180, 440, 79, 23))
         self.export_label = QLabel(Info)
         self.export_label.setObjectName(u"export_label")
-        self.export_label.setGeometry(QRect(240, 440, 91, 21))
+        self.export_label.setGeometry(QRect(80, 440, 91, 21))
 
         self.retranslateUi(Info)
 

@@ -43,8 +43,8 @@ class Ui_RAID_Manager(object):
         self.actionExit.setObjectName(u"actionExit")
         self.actionAbout = QAction(RAID_Manager)
         self.actionAbout.setObjectName(u"actionAbout")
-        self.actionOptons = QAction(RAID_Manager)
-        self.actionOptons.setObjectName(u"actionOptons")
+        self.actionOptions = QAction(RAID_Manager)
+        self.actionOptions.setObjectName(u"actionOptions")
         self.centralwidget = QWidget(RAID_Manager)
         self.centralwidget.setObjectName(u"centralwidget")
         self.verticalFrame = QFrame(self.centralwidget)
@@ -59,7 +59,7 @@ class Ui_RAID_Manager(object):
         font1.setBold(False)
         font1.setKerning(True)
         self.button1_new.setFont(font1)
-        self.button1_new.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.button1_new.setCursor(QCursor(Qt.CursorShape.ArrowCursor))
         icon = QIcon(QIcon.fromTheme(QIcon.ThemeIcon.ListAdd))
         self.button1_new.setIcon(icon)
 
@@ -67,7 +67,7 @@ class Ui_RAID_Manager(object):
 
         self.button2_edit = QPushButton(self.verticalFrame)
         self.button2_edit.setObjectName(u"button2_edit")
-        self.button2_edit.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.button2_edit.setCursor(QCursor(Qt.CursorShape.ArrowCursor))
         icon1 = QIcon(QIcon.fromTheme(QIcon.ThemeIcon.DriveHarddisk))
         self.button2_edit.setIcon(icon1)
         self.button2_edit.setCheckable(False)
@@ -76,7 +76,7 @@ class Ui_RAID_Manager(object):
 
         self.button3_info = QPushButton(self.verticalFrame)
         self.button3_info.setObjectName(u"button3_info")
-        self.button3_info.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.button3_info.setCursor(QCursor(Qt.CursorShape.ArrowCursor))
         icon2 = QIcon(QIcon.fromTheme(QIcon.ThemeIcon.HelpAbout))
         self.button3_info.setIcon(icon2)
 
@@ -103,7 +103,7 @@ class Ui_RAID_Manager(object):
         self.menubar.addAction(self.menuSettings.menuAction())
         self.menubar.addAction(self.menuHelp.menuAction())
         self.menuFiler.addAction(self.actionExit)
-        self.menuSettings.addAction(self.actionOptons)
+        self.menuSettings.addAction(self.actionOptions)
         self.menuHelp.addAction(self.actionAbout)
 
         self.retranslateUi(RAID_Manager)
@@ -115,7 +115,7 @@ class Ui_RAID_Manager(object):
         RAID_Manager.setWindowTitle(QCoreApplication.translate("RAID_Manager", u"RAID Manager", None))
         self.actionExit.setText(QCoreApplication.translate("RAID_Manager", u"Exit", None))
         self.actionAbout.setText(QCoreApplication.translate("RAID_Manager", u"About", None))
-        self.actionOptons.setText(QCoreApplication.translate("RAID_Manager", u"Optons", None))
+        self.actionOptions.setText(QCoreApplication.translate("RAID_Manager", u"Options", None))
 #if QT_CONFIG(tooltip)
         self.button1_new.setToolTip(QCoreApplication.translate("RAID_Manager", u"It creates a new RAID with selected devices", None))
 #endif // QT_CONFIG(tooltip)
