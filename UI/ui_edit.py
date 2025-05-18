@@ -23,6 +23,7 @@ class Ui_Edit(object):
     def setupUi(self, Edit):
         if not Edit.objectName():
             Edit.setObjectName(u"Edit")
+        Edit.setWindowModality(Qt.WindowModality.WindowModal)
         Edit.setEnabled(True)
         Edit.resize(720, 480)
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)

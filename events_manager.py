@@ -18,10 +18,13 @@ class EventsManager:
     @staticmethod
     def read_output(*args, **kwargs):
         try:
-            return subprocess.Popen(*args, **kwargs, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                                                            stderr=subprocess.PIPE, text=True)
+            return subprocess.Popen(*args, **kwargs, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         except subprocess.CalledProcessError as e:
             print(f"Error executing the command: {e}")
+
+    @staticmethod
+    def unmount_device(device):
+        EventsManager.run_command('umount ' + device, shell=True)
 
     @staticmethod
     def window_to_center(window):
@@ -56,14 +59,14 @@ class EventsManager:
                     EventsManager.restart_app()
                 except subprocess.CalledProcessError as e:
                     print(f"Error installing {program_name}: {e}")
-            if EventsManager.is_installed('yum'):
+            elif EventsManager.is_installed('yum'):
                 try:
                     subprocess.check_call(["pkexec", "yum", "install", program_name])
                     notification.success_notification(program_name, "installed")
                     EventsManager.restart_app()
                 except subprocess.CalledProcessError as e:
                     print(f"Error installing {program_name}: {e}")
-            if EventsManager.is_installed('dnf'):
+            elif EventsManager.is_installed('dnf'):
                 try:
                     subprocess.check_call(["pkexec", "dnf", "install", program_name])
                     notification.success_notification(program_name, "installed")
@@ -193,11 +196,11 @@ class EventsManager:
         match selected_option:
             case "TXT":
                 text = EventsManager.get_selected_raid_info(window.selected_raid)
-                EventsManager.save_to_text_file(window, text)
+                EventsManager.save_to_text_file(text)
 
 
     @staticmethod
-    def save_to_text_file(window, text):
+    def save_to_text_file(text):
         file_dialog = QFileDialog()
         file_dialog.setWindowTitle("Save File")
         file_dialog.setAcceptMode(QFileDialog.AcceptMode.AcceptSave)
@@ -243,6 +246,20 @@ class EventsManager:
             window.ui.selector.setToolTip("No device available")
 
     @staticmethod
+    def get_raid_member_string(raid):
+
+        arrays = EventsManager.run_command(['sudo', 'mdadm', '--detail', raid], capture_output=True, text=True).stdout.splitlines()
+
+        device = ""
+
+        for line in arrays:
+
+            if line.__contains__('/dev/s'):
+                device += line[line.find('/'):] + ' '
+
+        return device
+
+    @staticmethod
     def fill_raid_member_list(raid):
 
         arrays = EventsManager.run_command(['sudo', 'mdadm', '--detail', raid], capture_output=True, text=True).stdout.splitlines()
@@ -268,8 +285,8 @@ class EventsManager:
             return False
 
     @staticmethod
-    def change_level_dialog(selected_raid):
-        if EventsManager.check_if_selected_raid(selected_raid):
+    def change_level_dialog(window):
+        if EventsManager.check_if_selected_raid(window.selected_raid):
             dialog = Dialogs()
 
             # Dialog attributes:
@@ -277,7 +294,7 @@ class EventsManager:
             dialog.setWindowTitle("Change RAID Level")
             dialog.ui.label.setText("Enter new RAID Level:")
             dialog.ui.current_attribute_label.setText("Current RAID Path:")
-            dialog.ui.current_attribute.setText(selected_raid)
+            dialog.ui.current_attribute.setText(window.selected_raid)
 
             # Enabling selector:
 
@@ -302,52 +319,90 @@ class EventsManager:
             def change_level_action():
 
                 new_level = dialog.ui.selector.currentText()
-                process = EventsManager.read_output('sudo mdadm --grow ' + selected_raid + ' --level=' + new_level)
+                process = EventsManager.read_output('sudo mdadm --grow ' + window.selected_raid + ' --level=' + new_level)
                 response = process.stderr.readline()
 
                 print(response)
 
-                window = Notifications()
+                notification = Notifications()
 
                 if response.__contains__("no change requested"):
-                    window.new_notification(title="Error", text="The raid already has the selected level", icon="critical", buttons=["ok"])
+                    notification.new_notification(title="Error", text="The raid already has the selected level", icon="critical", buttons=["ok"])
 
                 if response.__contains__("Impossible level change requested"):
-                    window.new_notification(title="Error", text="The raid cannot be changed to the level " + new_level,
+                    notification.new_notification(title="Error", text="The raid cannot be changed to the level " + new_level,
                                             icon="critical", buttons=["ok"])
                 if response.__contains__("Need 1 spare to avoid degraded array, and only have 0"):
-                    window.new_notification(title="Error", text="You need 1 spare to avoid degraded array, and only have 0",
+                    notification.new_notification(title="Error", text="You need 1 spare to avoid degraded array, and only have 0",
                                             icon="critical", buttons=["ok"])
                 if response.__contains__("could not set level"):
-                    window.new_notification(title="Error", text="The raid could not set level to " + new_level,
+                    notification.new_notification(title="Error", text="The raid could not set level to " + new_level,
                                             icon="critical", buttons=["ok"])
                 if response.__contains__("changed to"):
-                    window.new_notification(title="Information",
-                                            text="Level of " + selected_raid + " changed to " + new_level,
+                    notification.new_notification(title="Information",
+                                            text="Level of " + window.selected_raid + " changed to " + new_level,
                                             icon="information", buttons=["ok"])
 
+    @staticmethod
+    def change_name_dialog(window):
+        if EventsManager.check_if_selected_raid(window.selected_raid):
+            dialog = Dialogs()
+
+            # Dialog attributes:
+
+            dialog.setWindowTitle("New name")
+            dialog.ui.label.setText("Enter a new name:")
+            dialog.ui.current_attribute_label.setText("Current RAID Path:")
+            dialog.ui.current_attribute.setText(window.selected_raid)
+
+            # Enabling selectors:
+
+            dialog.ui.text.setEnabled(True)
+            dialog.ui.selector.setEnabled(False)
+            dialog.ui.selector.setHidden(True)
+            dialog.ui.selector_mode.setEnabled(False)
+            dialog.ui.selector_mode.setHidden(True)
+
+            # Actions:
+
+            dialog.show()
+
+            dialog.ui.ok_button.clicked.connect(lambda: change_name_action())
+
+            def change_name_action():
+
+                # Get new name for the selected RAID:
+
+                new_name = dialog.ui.text.text()
+
+                if new_name != "":
+
+                    # Get devices from selected RAID:
+
+                    devices = EventsManager.get_raid_member_string(window.selected_raid)
+
+                    # Stop the RAID:
+
+                    EventsManager.stop_dialog(window)
+
+                    # Update name for the selected RAID:
+
+                    process = EventsManager.read_output('sudo mdadm --assemble --update=name --name=2 ' + new_name + ' ' +  window.selected_raid + ' ' + devices)
+
+                    response = process.stderr.readline()
+
+                    notification = Notifications()
+                    notification.new_notification(title="Information", text=response[6:], icon="information", buttons=["ok"])
+                    EventsManager.fill_raid_list(window)
+                else:
+                    notification = Notifications()
+                    notification.new_notification(title="Error", text="The new name cannot be empty.", icon="critical", buttons=["ok"])
 
 
-            """
-            
-            To change name: mdadm --stop /dev/md127
-mdadm --assemble --update=name --name=2 /dev/md1 /dev/sdb8 /dev/sda8 
-            
-            To change the level: mdadm --grow /dev/md0 --level=5
-
-            To add a drive: mdadm --manage /dev/md0 --add /dev/sdb1
-
-            To remove a drive: mdadm --manage /dev/md0 --remove /dev/sdb1
-
-            To assemble: mdadm --assemble /dev/md0
-
-            To stop: mdadm --stop /dev/md0
-            'sudo mdadm --stop ' + selected_raid
-            """
 
     @staticmethod
-    def add_drive_dialog(selected_raid):
-        if EventsManager.check_if_selected_raid(selected_raid):
+    def add_drive_dialog(window):
+        if EventsManager.check_if_selected_raid(window.selected_raid):
             dialog = Dialogs()
 
             # Dialog attributes:
@@ -356,15 +411,15 @@ mdadm --assemble --update=name --name=2 /dev/md1 /dev/sdb8 /dev/sda8
             dialog.ui.label.setText("Select a drive to add:")
             dialog.ui.label_mode.setText("Starting drive as:")
             dialog.ui.current_attribute_label.setText("Current RAID Path:")
-            dialog.ui.current_attribute.setText(selected_raid)
+            dialog.ui.current_attribute.setText(window.selected_raid)
 
-            # Enabling selectors:
+            # Enable selectors:
 
             dialog.ui.selector.setEnabled(True)
             dialog.ui.selector_mode.setEnabled(True)
             dialog.ui.text.setEnabled(False)
 
-            # Filling selectors:
+            # Fill selectors:
 
             EventsManager.fill_device_list(dialog)
             dialog.ui.selector_mode.addItem("Active")
@@ -385,24 +440,45 @@ mdadm --assemble --update=name --name=2 /dev/md1 /dev/sdb8 /dev/sda8
                     case "Active":
                         selected_drive = '/dev/' + dialog.ui.selector.currentText()[0: dialog.ui.selector.currentText().find('-')].strip()
 
-                        process = EventsManager.read_output('sudo mdadm --manage ' + selected_raid + ' --add ' + selected_drive)
+                        EventsManager.unmount_device(selected_drive)
+
+                        process = EventsManager.read_output('sudo mdadm --manage ' + window.selected_raid + ' --add ' + selected_drive)
 
                         response = process.stderr.readline()
 
+                        print(response)
+
                         if response.__contains__("not large enough to join array"):
                             notification = Notifications()
-                            notification.new_notification(title="Error",
-                                                          text="The selected drive (" + selected_drive + ") is not large enough to join array",
-                                                          icon="critical", buttons=["ok"])
+                            notification.new_notification(title="Error", text="The selected drive (" + selected_drive + ") is not large enough to join array", icon="critical", buttons=["ok"])
+
+                        if response.__contains__("added"):
+                            notification = Notifications()
+                            notification.new_notification(title="Information", text="The selected drive (" + selected_drive + ") has been added to the RAID (" + window.selected_raid + ") as an active drive", icon="information", buttons=["ok"])
+
+
                     case "Spare":
-                        pass
+                        selected_drive = '/dev/' + dialog.ui.selector.currentText()[0: dialog.ui.selector.currentText().find('-')].strip()
 
+                        EventsManager.unmount_device(selected_drive)
 
+                        process = EventsManager.read_output('sudo mdadm --manage ' + window.selected_raid + ' --add-spare ' + selected_drive)
 
+                        response = process.stderr.readline()
+
+                        print(response)
+
+                        if response.__contains__("not large enough to join array"):
+                            notification = Notifications()
+                            notification.new_notification(title="Error", text="The selected drive (" + selected_drive + ") is not large enough to join array", icon="critical", buttons=["ok"])
+
+                        if response.__contains__("added"):
+                            notification = Notifications()
+                            notification.new_notification(title="Information", text="The selected drive (" + selected_drive + ") has been added to the RAID (" + window.selected_raid + ") as a spare drive", icon="information", buttons=["ok"])
 
     @staticmethod
-    def remove_drive_dialog(selected_raid):
-        if EventsManager.check_if_selected_raid(selected_raid):
+    def remove_drive_dialog(window):
+        if EventsManager.check_if_selected_raid(window.selected_raid):
             dialog = Dialogs()
 
             # Dialog attributes:
@@ -410,18 +486,18 @@ mdadm --assemble --update=name --name=2 /dev/md1 /dev/sdb8 /dev/sda8
             dialog.setWindowTitle("Remove drive from RAID")
             dialog.ui.label.setText("Select a drive to remove:")
             dialog.ui.current_attribute_label.setText("Current RAID Path:")
-            dialog.ui.current_attribute.setText(selected_raid)
+            dialog.ui.current_attribute.setText(window.selected_raid)
 
-            # Enabling selector:
+            # Enable selector:
 
             dialog.ui.selector.setEnabled(True)
             dialog.ui.text.setEnabled(False)
             dialog.ui.selector_mode.setEnabled(False)
             dialog.ui.selector_mode.setHidden(True)
 
-            # Filling selector:
+            # Fill selector:
 
-            devices = EventsManager.fill_raid_member_list(selected_raid)
+            devices = EventsManager.fill_raid_member_list(window.selected_raid)
 
             for device in devices:
 
@@ -438,11 +514,17 @@ mdadm --assemble --update=name --name=2 /dev/md1 /dev/sdb8 /dev/sda8
 
                 if selected_drive:
 
-                    EventsManager.run_command('umount ' + selected_drive, shell=True)
-                    EventsManager.run_command('sudo mdadm ' + selected_raid + ' --fail ' + selected_drive, shell=True)
-                    process = EventsManager.read_output('sudo mdadm ' + selected_raid + ' --remove ' + selected_drive)
+                    EventsManager.unmount_device(selected_drive)
+                    EventsManager.run_command('sudo mdadm ' + window.selected_raid + ' --fail ' + selected_drive, shell=True)
+                    process = EventsManager.read_output('sudo mdadm ' + window.selected_raid + ' --remove ' + selected_drive)
 
                     response = process.stderr.readline()
+
+                    if response.__contains__("faulty"):
+                        notification = Notifications()
+                        notification.new_notification(title="Information",
+                                                      text="The selected drive (" + selected_drive + ") has been removed from the RAID (" + window.selected_raid + ")",
+                                                      icon="information", buttons=["ok"])
 
                     if response.__contains__("Device or resource busy"):
                         notification = Notifications()
@@ -513,7 +595,6 @@ mdadm --assemble --update=name --name=2 /dev/md1 /dev/sdb8 /dev/sda8
 
                 print(devices)
 
-               # EventsManager.run_command('umount ' + window.get_selected_raid(), shell=True)
                 EventsManager.run_command('sudo mdadm --stop ' + window.get_selected_raid(), shell=True)
                 process = EventsManager.read_output('sudo mdadm --zero-superblock ' + window.get_selected_raid() +  ' ' + devices)
                 EventsManager.run_command('sudo mdadm --remove ' + window.get_selected_raid(), shell=True)

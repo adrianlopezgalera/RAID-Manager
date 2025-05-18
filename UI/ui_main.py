@@ -24,6 +24,7 @@ class Ui_RAID_Manager(object):
     def setupUi(self, RAID_Manager):
         if not RAID_Manager.objectName():
             RAID_Manager.setObjectName(u"RAID_Manager")
+        RAID_Manager.setWindowModality(Qt.WindowModality.ApplicationModal)
         RAID_Manager.resize(720, 480)
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)

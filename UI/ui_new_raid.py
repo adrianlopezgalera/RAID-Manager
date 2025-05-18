@@ -23,6 +23,7 @@ class Ui_New_Raid(object):
     def setupUi(self, New_Raid):
         if not New_Raid.objectName():
             New_Raid.setObjectName(u"New_Raid")
+        New_Raid.setWindowModality(Qt.WindowModality.WindowModal)
         New_Raid.resize(720, 480)
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)

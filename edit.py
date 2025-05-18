@@ -2,10 +2,7 @@ import subprocess
 
 from PySide6.QtWidgets import QWidget, QMessageBox
 from UI.ui_edit import Ui_Edit
-from dialogs import Dialogs
 from events_manager import EventsManager
-from notifications import Notifications
-
 
 class Edit(QWidget):
 
@@ -27,9 +24,10 @@ class Edit(QWidget):
         # Connecting buttons to events:
         self.ui.cancel_button.clicked.connect(self.close)
 
-        self.ui.change_level_button.clicked.connect(lambda: EventsManager.change_level_dialog(selected_raid=self.selected_raid))
-        self.ui.add_drive_button.clicked.connect(lambda: EventsManager.add_drive_dialog(selected_raid=self.selected_raid))
-        self.ui.remove_drive_button.clicked.connect(lambda: EventsManager.remove_drive_dialog(selected_raid=self.selected_raid))
+        self.ui.change_name_button.clicked.connect(lambda: EventsManager.change_name_dialog(window=self))
+        self.ui.change_level_button.clicked.connect(lambda: EventsManager.change_level_dialog(window=self))
+        self.ui.add_drive_button.clicked.connect(lambda: EventsManager.add_drive_dialog(window=self))
+        self.ui.remove_drive_button.clicked.connect(lambda: EventsManager.remove_drive_dialog(window=self))
         self.ui.assemble_button.clicked.connect(lambda: EventsManager.assemble_dialog(self))
         self.ui.stop_button.clicked.connect(lambda: EventsManager.stop_dialog(self))
         self.ui.delete_button.clicked.connect(lambda: EventsManager.delete_dialog(self))

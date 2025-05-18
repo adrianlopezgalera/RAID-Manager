@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>Edit</class>
  <widget class="QWidget" name="Edit">
+  <property name="windowModality">
+   <enum>Qt::WindowModality::WindowModal</enum>
+  </property>
   <property name="enabled">
    <bool>true</bool>
   </property>

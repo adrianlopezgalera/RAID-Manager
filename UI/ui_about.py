@@ -22,6 +22,7 @@ class Ui_About(object):
     def setupUi(self, About):
         if not About.objectName():
             About.setObjectName(u"About")
+        About.setWindowModality(Qt.WindowModality.WindowModal)
         About.resize(720, 480)
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)

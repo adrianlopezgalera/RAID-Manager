@@ -35,13 +35,15 @@ class RaidManager(QMainWindow):
             self.ui.button1_new.clicked.connect(lambda: EventsManager.new_window(new_raid))
             self.ui.button2_edit.clicked.connect(lambda: EventsManager.new_window(edit))
             self.ui.button3_info.clicked.connect(lambda: EventsManager.new_window(info))
+            self.ui.actionAbout.triggered.connect(lambda: EventsManager.new_window(about))
+
 
             #self.ui.button1_new.clicked.connect(lambda: EventsManager.create_object(NewRaid().show()))
             #self.ui.button2_edit.clicked.connect(lambda: EventsManager.create_object(Edit().show()))
             #self.ui.button3_info.clicked.connect(lambda: EventsManager.create_object(Info().show()))
+            #self.ui.button3_info.clicked.connect(lambda: EventsManager.create_object(About().show()))
 
             self.ui.actionExit.triggered.connect(lambda: EventsManager.close())
-            self.ui.actionAbout.triggered.connect(lambda: EventsManager.new_window(about))
 
         elif EventsManager.has_policy():
             EventsManager.install_program('mdadm')

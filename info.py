@@ -44,6 +44,8 @@ class Info(QWidget):
 
         self.ui.raid_path.setText(self.selected_raid)
 
+        devices = ""
+
         for line in arrays:
 
             if line.__contains__('Name'):
@@ -83,10 +85,9 @@ class Info(QWidget):
 
                 self.ui.raid_state.setText(state)
 
-            if line.__contains__('/'):
-                device = ""
-                device += line[line.find('/'):] + ' '
-                self.ui.raid_devices.setText(device)
+            if line.__contains__('/dev/s'):
+                devices += line[line.find('/'):] + ' '
+                self.ui.raid_devices.setText(devices)
             if line.__contains__('Active Devices'):
                 self.ui.active_devices.setText(line[21:])
             if line.__contains__('Working Devices'):

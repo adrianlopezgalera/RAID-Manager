@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>New_Raid</class>
  <widget class="QWidget" name="New_Raid">
+  <property name="windowModality">
+   <enum>Qt::WindowModality::WindowModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>

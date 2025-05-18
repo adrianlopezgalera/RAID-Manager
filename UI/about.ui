@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>About</class>
  <widget class="QWidget" name="About">
+  <property name="windowModality">
+   <enum>Qt::WindowModality::WindowModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
