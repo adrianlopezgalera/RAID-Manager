@@ -1,6 +1,3 @@
-import subprocess
-
-from PyQt6.QtWidgets import QAbstractButton
 from PySide6 import QtCore
 from PySide6.QtWidgets import QWidget, QMessageBox
 from UI.ui_new_raid import Ui_New_Raid
@@ -67,16 +64,6 @@ class NewRaid(QWidget):
 
         flag = True
 
-        """
-        if response.__contains__("'1' is an unusual number of drives for an array"):
-            dialog.new_notification(title="Error", text="At least 2 raid-devices are needed for level 5.", icon="critical", buttons=["ok"])
-            
-            mdadm: Note: this array has metadata at the start and
-    may not be suitable as a boot device.  If you plan to
-    store '/boot' on this device please ensure that
-    your boot-loader understands md/v1.x metadata, or use
-    --metadata=0.90
-        """
         if response.__contains__("chunk size defaults to 512K"):
             dialog = Notifications()
 

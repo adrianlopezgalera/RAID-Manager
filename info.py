@@ -17,8 +17,6 @@ class Info(QWidget):
         self.ui.select_raid.currentIndexChanged.connect(lambda: self.print_raid_details())
 
         # Update available RAIDs:
-
-
         if self.isVisible():
             EventsManager.fill_raid_list(self)
 

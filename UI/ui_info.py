@@ -229,7 +229,6 @@ class Ui_Info(object):
         self.export_button.setGeometry(QRect(270, 440, 80, 23))
         self.export_selector = QComboBox(Info)
         self.export_selector.addItem("")
-        self.export_selector.addItem("")
         self.export_selector.setObjectName(u"export_selector")
         self.export_selector.setGeometry(QRect(180, 440, 79, 23))
         self.export_label = QLabel(Info)
@@ -270,7 +269,6 @@ class Ui_Info(object):
         self.spare_devices.setText("")
         self.export_button.setText(QCoreApplication.translate("Info", u"Export", None))
         self.export_selector.setItemText(0, QCoreApplication.translate("Info", u"TXT", None))
-        self.export_selector.setItemText(1, QCoreApplication.translate("Info", u"JSON", None))
 
         self.export_label.setText(QCoreApplication.translate("Info", u"Export info to:", None))
     # retranslateUi

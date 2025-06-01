@@ -6,7 +6,6 @@ from PySide6.QtWidgets import QMessageBox, QFileDialog
 from dialogs import Dialogs
 from notifications import Notifications
 
-
 class EventsManager:
 
     @staticmethod
@@ -151,7 +150,6 @@ class EventsManager:
 
     @staticmethod
     def print_selected_raid(window):
-        #window.set_selected_raid()
         window.ui.selected_raid.setText(window.selected_raid)
 
     @staticmethod
@@ -191,12 +189,17 @@ class EventsManager:
 
     @staticmethod
     def export_selected_raid_info(window):
-        selected_option = window.ui.export_selector.currentText()
 
-        match selected_option:
-            case "TXT":
-                text = EventsManager.get_selected_raid_info(window.selected_raid)
-                EventsManager.save_to_text_file(text)
+        if window.selected_raid == "":
+            notification = Notifications()
+            notification.new_notification("Export", "No RAID available to export.", "critical", "ok")
+        else:
+            selected_option = window.ui.export_selector.currentText()
+
+            match selected_option:
+                case "TXT":
+                    text = EventsManager.get_selected_raid_info(window.selected_raid)
+                    EventsManager.save_to_text_file(text)
 
 
     @staticmethod
@@ -612,4 +615,3 @@ class EventsManager:
                     notification.success_notification(window.get_selected_raid(), "deleted")
 
                 EventsManager.fill_raid_list(window)
-
