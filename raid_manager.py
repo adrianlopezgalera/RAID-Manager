@@ -8,6 +8,9 @@ from events_manager import EventsManager
 from info import Info
 from new_raid import NewRaid
 from UI.ui_main import Ui_RAID_Manager
+from options import Options
+from system_tray import Tray
+
 
 class RaidManager(QMainWindow):
 
@@ -29,6 +32,11 @@ class RaidManager(QMainWindow):
             edit = Edit()
             info = Info()
             about = About()
+            options = Options()
+
+            # Activate system tray if enabled:
+            tray = Tray()
+            options.evaluate_setting(tray)
 
             # Connecting buttons to events:
 
@@ -36,6 +44,7 @@ class RaidManager(QMainWindow):
             self.ui.button2_edit.clicked.connect(lambda: EventsManager.new_window(edit))
             self.ui.button3_info.clicked.connect(lambda: EventsManager.new_window(info))
             self.ui.actionAbout.triggered.connect(lambda: EventsManager.new_window(about))
+            self.ui.actionOptions.triggered.connect(lambda: EventsManager.new_window(options))
 
 
             #self.ui.button1_new.clicked.connect(lambda: EventsManager.create_object(NewRaid().show()))

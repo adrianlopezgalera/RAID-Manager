@@ -3,7 +3,7 @@
  <class>RAID_Manager</class>
  <widget class="QMainWindow" name="RAID_Manager">
   <property name="windowModality">
-   <enum>Qt::WindowModality::ApplicationModal</enum>
+   <enum>Qt::WindowModality::WindowModal</enum>
   </property>
   <property name="geometry">
    <rect>

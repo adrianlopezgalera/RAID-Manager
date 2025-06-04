@@ -1,10 +1,13 @@
 import os
 import subprocess
 import sys
+import json
 
 from PySide6.QtWidgets import QMessageBox, QFileDialog
 from dialogs import Dialogs
 from notifications import Notifications
+from system_tray import Tray
+
 
 class EventsManager:
 
@@ -199,11 +202,26 @@ class EventsManager:
             match selected_option:
                 case "TXT":
                     text = EventsManager.get_selected_raid_info(window.selected_raid)
-                    EventsManager.save_to_text_file(text)
+                    EventsManager.save_to_text_file_dialog(text)
+
+    @staticmethod
+    def save_txt_file(file_name, content):
+        with open(file_name, 'w') as file:
+            file.write(content)
+
+    @staticmethod
+    def read_txt_file(file_name):
+        try:
+            with open(file_name, 'r') as file:
+                return file.read()
+
+        except FileNotFoundError:
+            print("File not found.")
+            return None
 
 
     @staticmethod
-    def save_to_text_file(text):
+    def save_to_text_file_dialog(text):
         file_dialog = QFileDialog()
         file_dialog.setWindowTitle("Save File")
         file_dialog.setAcceptMode(QFileDialog.AcceptMode.AcceptSave)
@@ -214,9 +232,31 @@ class EventsManager:
             file_name += ".txt"
 
         if file_name:
-            with open(file_name, 'w') as file:
-                file.write(text)
+            EventsManager.save_txt_file(file_name, text)
 
+    @staticmethod
+    def save_to_json_file(data, filename):
+
+        try:
+            with open(filename, 'w') as file:
+                json.dump(data, file)
+        except IOError:
+            print ("Config file cannot be saved")
+
+
+    @staticmethod
+    def parse_json(filename):
+        try:
+            with open(filename, 'r') as file:
+                #if os.stat(str(file)).st_size != 0:
+                return json.load(file)
+
+        except FileNotFoundError:
+            return print("Config no found")
+
+    @staticmethod
+    def read_saved_options():
+        return EventsManager.read_txt_file(".config")
 
     @staticmethod
     def fill_device_list(window):
