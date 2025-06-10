@@ -6,10 +6,12 @@ import json
 from PySide6.QtWidgets import QMessageBox, QFileDialog
 from dialogs import Dialogs
 from notifications import Notifications
-from system_tray import Tray
 
+# This controller class carries out all shared operations across the application.
 
 class EventsManager:
+
+    # Executes a command via subprocess until its exit:
 
     @staticmethod
     def run_command(*args, **kwargs):
@@ -17,6 +19,9 @@ class EventsManager:
             return subprocess.run(*args, **kwargs)
         except subprocess.CalledProcessError as e:
             print(f"Error executing the command: {e}")
+
+    # Executes a command via subprocess with interaction and sets pipelines:
+
     @staticmethod
     def read_output(*args, **kwargs):
         try:
@@ -24,9 +29,13 @@ class EventsManager:
         except subprocess.CalledProcessError as e:
             print(f"Error executing the command: {e}")
 
+    # Unmounts an entered device:
+
     @staticmethod
     def unmount_device(device):
         EventsManager.run_command('umount ' + device, shell=True)
+
+    # Centers an entered window:
 
     @staticmethod
     def window_to_center(window):
@@ -36,6 +45,8 @@ class EventsManager:
 
         qr.moveCenter(cp)
         window.move(qr.topLeft())
+
+    # Checks if a program (dependency) is installed:
 
     @staticmethod
     def is_installed(program):
@@ -47,10 +58,15 @@ class EventsManager:
             print(f"Error code: {e}")
             return False
 
+    # Installs an entered program with the proper package manager:
+
     @staticmethod
     def install_program(program_name):
 
         notification = Notifications()
+
+        # Asks user for confirmation:
+
         user_input = notification.question_notification(program_name)
 
         if user_input == QMessageBox.StandardButton.Ok:
@@ -81,57 +97,70 @@ class EventsManager:
         else:
             EventsManager.close()
 
+    # Restarts the application:
+
     @staticmethod
     def restart_app():
         os.execl(sys.executable, sys.executable, *sys.argv)
+
+    # Restarts the system:
 
     @staticmethod
     def restart_system():
         os.system('systemctl reboot -i')
 
+    # Closes the application:
+
     @staticmethod
     def close():
         sys.exit()
+
+    # Checks if the policy file is installed in the proper path:
 
     @staticmethod
     def has_policy():
         return os.path.exists("/etc/sudoers.d/mdadm")
 
+    # Installs the policy file:
+
     @staticmethod
     def install_policy():
 
         notification = Notifications()
+
+        # Asks user for confirmation:
+
         user_input = notification.question_notification('a policy file')
 
         if user_input == QMessageBox.StandardButton.Ok:
 
             try:
 
-                # Define the content of the file with user privilege specification:
+                # Defines the content of the file with user privilege specification:
                 file_content = "# User privilege specification\nALL ALL = NOPASSWD: /usr/sbin/mdadm"
 
-                # Define the file path and name:
+                # Defines the file path and name:
                 file_path = os.getcwd()
                 file_name = "mdadm"
 
-                # Create the file with user privilege specification:
+                # Creates the file with user privilege specification:
                 with open(os.path.join(file_path, file_name), "w") as file:
                     file.write(file_content)
 
-                # Copy the file into /etc/sudoers.d:
+                # Copies the file into /etc/sudoers.d:
                 command = f"pkexec cp '{os.path.join(file_path, file_name)}' /etc/sudoers.d/{file_name}"
 
-                # Execute the command using subprocess:
+                # Executes the command using subprocess:
                 EventsManager.run_command(command, shell=True)
 
-                # Delete temporal file:
+                # Deletes temporal file:
                 os.remove(os.path.join(file_path, file_name))
 
-                # Inform the user:
+                # Informs the user:
                 notification = Notifications()
                 notification.success_notification('The policy', "installed")
 
-                # Restart the application:
+                # Restarts the application:
                 EventsManager.restart_app()
 
             except subprocess.CalledProcessError:
@@ -142,18 +171,25 @@ class EventsManager:
         else:
             EventsManager.close()
 
+    # Shows a window of the entered class:
 
     @staticmethod
     def new_window(self):
         self.show()
 
+    # Creates dynamically a new object from an entered class:
+
     @staticmethod
     def create_object(class_name):
         return type(class_name)
 
+    # Updates the RAID selector of the entered window:
+
     @staticmethod
     def print_selected_raid(window):
         window.ui.selected_raid.setText(window.selected_raid)
+
+    # Asks user for confirmation in order to continue with an entered process:
 
     @staticmethod
     def user_input_checking(dialog, process):
@@ -171,27 +207,44 @@ class EventsManager:
             process.stdin.flush()
             return False
 
+    # Fill the RAID selector of the entered window:
+
     @staticmethod
     def fill_raid_list(window):
 
+        # Clears the RAID selector:
+
         window.ui.select_raid.clear()
 
-        arrays = EventsManager.run_command(['sudo', 'mdadm', '--detail' , '--scan'], capture_output=True, text=True).stdout.splitlines()
+        # Get info about the entered RAID as a string array:
 
-        if not arrays:
+        raid_info = EventsManager.run_command(['sudo', 'mdadm', '--detail' , '--scan'], capture_output=True, text=True).stdout.splitlines()
+
+        # If the output is empty:
+
+        if not raid_info:
             window.ui.select_raid.setPlaceholderText("No RAID available")
             window.ui.select_raid.setToolTip("No RAID available")
         else:
-            for array in arrays:
+            for array in raid_info:
+
+                # Extracts the data by avoiding conflicting lines:
+
                 if "Value" not in array:
                     window.ui.select_raid.addItem(array[array.find('/'): array.find(' metadata')])
+
+    # Gets info about an entered RAID:
 
     @staticmethod
     def get_selected_raid_info(selected_raid):
         return EventsManager.run_command(['sudo', 'mdadm', '--detail', selected_raid], capture_output=True, text=True).stdout
 
+    # Exports the selected RAID in the chosen format:
+
     @staticmethod
     def export_selected_raid_info(window):
+
+        # If there is no an available RAID, a dialog is shown:
 
         if window.selected_raid == "":
             notification = Notifications()
@@ -204,10 +257,14 @@ class EventsManager:
                     text = EventsManager.get_selected_raid_info(window.selected_raid)
                     EventsManager.save_to_text_file_dialog(text)
 
+    # Saves an entered content into a file with a name:
+
     @staticmethod
     def save_txt_file(file_name, content):
         with open(file_name, 'w') as file:
             file.write(content)
+
+    # Returns the content of a TXT file:
 
     @staticmethod
     def read_txt_file(file_name):
@@ -219,6 +276,7 @@ class EventsManager:
             print("File not found.")
             return None
 
+    # Generates a dynamic dialog to prompt the user to choose a name and location for the file:
 
     @staticmethod
     def save_to_text_file_dialog(text):
@@ -228,11 +286,17 @@ class EventsManager:
 
         file_name, _ = file_dialog.getSaveFileName(None, "Save File", "", "Text Files (*.txt)")
 
+        # Checks if the extension exists to include it of avoid its repetition:
+
         if ".txt" or ".TXT" not in file_name:
             file_name += ".txt"
 
+        # If the user chooses to save the file, the file is saved:
+
         if file_name:
             EventsManager.save_txt_file(file_name, text)
+
+    # Saves a JSON with the entered content:
 
     @staticmethod
     def save_to_json_file(data, filename):
@@ -243,6 +307,7 @@ class EventsManager:
         except IOError:
             print ("Config file cannot be saved")
 
+    # Returns the parsed content of a JSON file:
 
     @staticmethod
     def parse_json(filename):
@@ -254,12 +319,18 @@ class EventsManager:
         except FileNotFoundError:
             return print("Config no found")
 
+    # Returns of the content of the configuration file:
+
     @staticmethod
     def read_saved_options():
         return EventsManager.read_txt_file(".config")
 
+    # Fills the list with the available drives to create a new RAID or add into one:
+
     @staticmethod
     def fill_device_list(window):
+
+        # Clears the drive selector:
 
         window.ui.selector.clear()
 
@@ -273,11 +344,15 @@ class EventsManager:
                 device_type = device_info[2]
                 device_fstype = device_info[3]
 
+                # Avoids the device if it's already part of a Linux RAID:
+
                 if device_fstype == "linux_raid_member":
                     continue
 
                 if len(device_info) == 5:
                     device_mount_point = device_info[4]
+
+                    # Avoids the device if it's root, home or an EFI partition:
 
                     if (len(device_mount_point) == 1) or (device_mount_point.__contains__("/home")) or (device_mount_point.__contains__("/boot/efi")):
                         continue
@@ -288,10 +363,14 @@ class EventsManager:
         if not window.ui.selector.currentText():
             window.ui.selector.setToolTip("No device available")
 
-    @staticmethod
-    def get_raid_member_string(raid):
+    # Returns a string with the drives that are part of entered RAID:
 
-        arrays = EventsManager.run_command(['sudo', 'mdadm', '--detail', raid], capture_output=True, text=True).stdout.splitlines()
+    @staticmethod
+    def get_raid_member_string(selected_raid):
+
+        arrays = EventsManager.run_command(['sudo', 'mdadm', '--detail', selected_raid], capture_output=True, text=True).stdout.splitlines()
+
+        # A variable to save a string with all drives:
 
         device = ""
 
@@ -302,10 +381,12 @@ class EventsManager:
 
         return device
 
-    @staticmethod
-    def fill_raid_member_list(raid):
+    # Returns a string array with the drives that are part of entered RAID:
 
-        arrays = EventsManager.run_command(['sudo', 'mdadm', '--detail', raid], capture_output=True, text=True).stdout.splitlines()
+    @staticmethod
+    def fill_raid_member_list(selected_raid):
+
+        arrays = EventsManager.run_command(['sudo', 'mdadm', '--detail', selected_raid], capture_output=True, text=True).stdout.splitlines()
 
         device = ""
 
@@ -317,6 +398,7 @@ class EventsManager:
 
         return device.splitlines()
 
+    # Checks if there is a selected RAID:
 
     @staticmethod
     def check_if_selected_raid(selected_raid):
@@ -326,6 +408,8 @@ class EventsManager:
             notify = Notifications()
             notify.new_notification(title="Error", text="You must select a RAID first.", icon="critical", buttons=["ok"])
             return False
+
+    # Method for changing RAID level. It creates a dynamic dialog first:
 
     @staticmethod
     def change_level_dialog(window):
@@ -359,32 +443,34 @@ class EventsManager:
 
             dialog.ui.ok_button.clicked.connect(lambda: change_level_action())
 
+            # Nested method for changing RAID level:
+
             def change_level_action():
 
                 new_level = dialog.ui.selector.currentText()
                 process = EventsManager.read_output('sudo mdadm --grow ' + window.selected_raid + ' --level=' + new_level)
                 response = process.stderr.readline()
 
-                print(response)
-
                 notification = Notifications()
 
                 if response.__contains__("no change requested"):
-                    notification.new_notification(title="Error", text="The raid already has the selected level", icon="critical", buttons=["ok"])
+                    notification.new_notification(title="Error", text="The selected_raid already has the selected level", icon="critical", buttons=["ok"])
 
                 if response.__contains__("Impossible level change requested"):
-                    notification.new_notification(title="Error", text="The raid cannot be changed to the level " + new_level,
+                    notification.new_notification(title="Error", text="The selected_raid cannot be changed to the level " + new_level,
                                             icon="critical", buttons=["ok"])
                 if response.__contains__("Need 1 spare to avoid degraded array, and only have 0"):
                     notification.new_notification(title="Error", text="You need 1 spare to avoid degraded array, and only have 0",
                                             icon="critical", buttons=["ok"])
                 if response.__contains__("could not set level"):
-                    notification.new_notification(title="Error", text="The raid could not set level to " + new_level,
+                    notification.new_notification(title="Error", text="The selected_raid could not set level to " + new_level,
                                             icon="critical", buttons=["ok"])
                 if response.__contains__("changed to"):
                     notification.new_notification(title="Information",
                                             text="Level of " + window.selected_raid + " changed to " + new_level,
                                             icon="information", buttons=["ok"])
+
+    # Method for changing RAID name. It creates a dynamic dialog first:
 
     @staticmethod
     def change_name_dialog(window):
@@ -411,6 +497,8 @@ class EventsManager:
             dialog.show()
 
             dialog.ui.ok_button.clicked.connect(lambda: change_name_action())
+
+            # Nested method for changing RAID name:
 
             def change_name_action():
 
@@ -441,7 +529,7 @@ class EventsManager:
                     notification = Notifications()
                     notification.new_notification(title="Error", text="The new name cannot be empty.", icon="critical", buttons=["ok"])
 
-
+    # Method for adding a drive to a selected RAID. It creates a dynamic dialog first:
 
     @staticmethod
     def add_drive_dialog(window):
@@ -475,6 +563,8 @@ class EventsManager:
 
             dialog.ui.ok_button.clicked.connect(lambda: add_drive_action())
 
+            # Nested method for adding a drive to a RAID:
+
             def add_drive_action():
 
                 selected_option = dialog.ui.selector_mode.currentText()
@@ -488,8 +578,6 @@ class EventsManager:
                         process = EventsManager.read_output('sudo mdadm --manage ' + window.selected_raid + ' --add ' + selected_drive)
 
                         response = process.stderr.readline()
-
-                        print(response)
 
                         if response.__contains__("not large enough to join array"):
                             notification = Notifications()
@@ -509,8 +597,6 @@ class EventsManager:
 
                         response = process.stderr.readline()
 
-                        print(response)
-
                         if response.__contains__("not large enough to join array"):
                             notification = Notifications()
                             notification.new_notification(title="Error", text="The selected drive (" + selected_drive + ") is not large enough to join array", icon="critical", buttons=["ok"])
@@ -518,6 +604,9 @@ class EventsManager:
                         if response.__contains__("added"):
                             notification = Notifications()
                             notification.new_notification(title="Information", text="The selected drive (" + selected_drive + ") has been added to the RAID (" + window.selected_raid + ") as a spare drive", icon="information", buttons=["ok"])
+
+
+    # Method for removing a drive from a selected RAID. It creates a dynamic dialog first:
 
     @staticmethod
     def remove_drive_dialog(window):
@@ -579,6 +668,8 @@ class EventsManager:
                                                   text="No device available to remove",
                                                   icon="critical", buttons=["ok"])
 
+    # Method for assembling existing RAIDs::
+
     @staticmethod
     def assemble_dialog(window):
         process = EventsManager.read_output('sudo mdadm --assemble --scan')
@@ -597,7 +688,12 @@ class EventsManager:
         else:
             notification = Notifications()
             notification.new_notification(title="Information", text=started_raid[6:], icon="information", buttons=["ok"])
+
+            # Updates the current RAID list:
+
             EventsManager.fill_raid_list(window)
+
+    # Method for stopping a selected RAID:
 
     @staticmethod
     def stop_dialog(window):
@@ -605,18 +701,20 @@ class EventsManager:
             process = EventsManager.read_output('sudo mdadm --stop ' + window.get_selected_raid())
 
             output = process.stderr.readline()
-            print(output)
 
             if output.__contains__("No such file or directory"):
                 notification = Notifications()
                 notification.new_notification(title="Error", text="The RAID is already stopped", icon="critical", buttons=["ok"])
 
             if output.__contains__("stopped"):
-
                 notification = Notifications()
                 notification.success_notification(window.get_selected_raid(), "stopped")
 
+        # Updates the current RAID list:
+
         EventsManager.fill_raid_list(window)
+
+    # Method for deleting a selected RAID:
 
     @staticmethod
     def delete_dialog(window):
@@ -627,23 +725,20 @@ class EventsManager:
 
             if user_input == QMessageBox.StandardButton.Ok:
 
-                arrays = EventsManager.run_command(['sudo', 'mdadm', '--detail', window.selected_raid], capture_output=True, text=True).stdout.splitlines()
+                raid_info = EventsManager.run_command(['sudo', 'mdadm', '--detail', window.selected_raid], capture_output=True, text=True).stdout.splitlines()
 
                 devices = ""
 
-                for line in arrays[1:]:
+                for line in raid_info[1:]:
 
                     if line.__contains__('/'):
                         devices += line[line.find('/'):] + ' '
-
-                print(devices)
 
                 EventsManager.run_command('sudo mdadm --stop ' + window.get_selected_raid(), shell=True)
                 process = EventsManager.read_output('sudo mdadm --zero-superblock ' + window.get_selected_raid() +  ' ' + devices)
                 EventsManager.run_command('sudo mdadm --remove ' + window.get_selected_raid(), shell=True)
 
                 output = process.stderr.readline()
-                print(output)
 
                 if output.__contains__("No such file or directory"):
                     notification = Notifications()
@@ -653,5 +748,7 @@ class EventsManager:
                 else:
                     notification = Notifications()
                     notification.success_notification(window.get_selected_raid(), "deleted")
+
+                # Updates the current RAID list:
 
                 EventsManager.fill_raid_list(window)

@@ -16,11 +16,10 @@ class Info(QWidget):
         EventsManager.fill_raid_list(self)
         self.ui.select_raid.currentIndexChanged.connect(lambda: self.print_raid_details())
 
-        # Update available RAIDs:
-        if self.isVisible():
-            EventsManager.fill_raid_list(self)
+        # Load the available RAIDs selector:
+        EventsManager.fill_raid_list(self)
 
-        # Default values:
+        # By default, it loads the details of the first RAID:
         self.print_raid_details()
 
         # Connecting buttons to events:
@@ -30,21 +29,27 @@ class Info(QWidget):
     def set_selected_raid(self):
         self.selected_raid = self.ui.select_raid.currentText()
 
+    # Looks up and extracts the strings to fill the form:
+
     def print_raid_details(self):
 
-        # Take selected RAID:
+        # Reads the selected RAID:
 
         self.set_selected_raid()
 
-        # Fill fields:
+        # Extract info about the selected RAID:
 
-        arrays = EventsManager.get_selected_raid_info(self.selected_raid).splitlines()
+        raid_info = EventsManager.get_selected_raid_info(self.selected_raid).splitlines()
 
         self.ui.raid_path.setText(self.selected_raid)
 
-        devices = ""
+        # Variable to save a string with the drives of the selected RAID:
 
-        for line in arrays:
+        drives = ""
+
+        # Fills the fields by evaluating the content of each line:
+
+        for line in raid_info:
 
             if line.__contains__('Name'):
                 self.ui.raid_name.setText(line[21:])
@@ -84,8 +89,8 @@ class Info(QWidget):
                 self.ui.raid_state.setText(state)
 
             if line.__contains__('/dev/s'):
-                devices += line[line.find('/'):] + ' '
-                self.ui.raid_devices.setText(devices)
+                drives += line[line.find('/'):] + ' '
+                self.ui.raid_devices.setText(drives)
             if line.__contains__('Active Devices'):
                 self.ui.active_devices.setText(line[21:])
             if line.__contains__('Working Devices'):

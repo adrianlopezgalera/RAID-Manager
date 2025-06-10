@@ -1,6 +1,3 @@
-from operator import truediv
-from types import NoneType
-
 from PySide6.QtWidgets import QWidget
 from UI.ui_options import Ui_Options
 from events_manager import EventsManager
@@ -8,8 +5,6 @@ from system_tray import Tray
 
 
 class Options(QWidget):
-
-
 
     def __init__(self):
         super().__init__(parent=None)
@@ -27,10 +22,9 @@ class Options(QWidget):
         self.load_options(saved_options)
 
 
-
     def save_options(self):
 
-        text =  (("system_tray : " + self.set_system_tray())
+        text =  (("system_tray : " + self.get_system_tray())
                  + "")
 
         EventsManager.save_txt_file(".config", text)
@@ -42,6 +36,8 @@ class Options(QWidget):
         self.evaluate_setting(tray)
 
         self.close()
+
+    # Sets the current values in the selector according to the saved settings:
 
     def load_options(self, saved_options):
 
@@ -55,6 +51,8 @@ class Options(QWidget):
                     else:
                         self.ui.system_tray_selector.setCurrentIndex(1)
 
+    # Evaluates the saved settings:
+
     def evaluate_setting(self, tray):
 
         if self.ui.system_tray_selector.currentText() == "Enabled":
@@ -62,5 +60,7 @@ class Options(QWidget):
         else:
             tray.destroy()
 
-    def set_system_tray(self):
+    # Returns the current value of the system tray selector:
+
+    def get_system_tray(self):
         return self.ui.system_tray_selector.currentText()

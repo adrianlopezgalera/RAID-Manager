@@ -1,6 +1,4 @@
-import subprocess
-
-from PySide6.QtWidgets import QWidget, QMessageBox
+from PySide6.QtWidgets import QWidget
 from UI.ui_edit import Ui_Edit
 from events_manager import EventsManager
 
@@ -19,10 +17,8 @@ class Edit(QWidget):
 
         # Default values:
         self.set_selected_raid()
-        #self.ui.selected_raid.setText(self.ui.select_raid.currentText())
 
         # Connecting buttons to events:
-        self.ui.cancel_button.clicked.connect(self.close)
 
         self.ui.change_name_button.clicked.connect(lambda: EventsManager.change_name_dialog(window=self))
         self.ui.change_level_button.clicked.connect(lambda: EventsManager.change_level_dialog(window=self))
@@ -31,7 +27,7 @@ class Edit(QWidget):
         self.ui.assemble_button.clicked.connect(lambda: EventsManager.assemble_dialog(self))
         self.ui.stop_button.clicked.connect(lambda: EventsManager.stop_dialog(self))
         self.ui.delete_button.clicked.connect(lambda: EventsManager.delete_dialog(self))
-
+        self.ui.cancel_button.clicked.connect(self.close)
 
     def get_selected_raid(self):
         return self.selected_raid
@@ -41,4 +37,3 @@ class Edit(QWidget):
 
     def print_selected_raid(self):
         self.set_selected_raid()
-        #self.ui.selected_raid.setText(self.selected_raid)

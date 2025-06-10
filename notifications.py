@@ -1,14 +1,16 @@
-from PyQt6.QtWidgets import QApplication, QMessageBox
+from PyQt6.QtWidgets import QMessageBox
 
 class Notifications(QMessageBox):
     def __init__(self, parent=None):
         super().__init__(parent)
 
+    # Created a new notification with the entered values:
+
     def new_notification(self, title, text, icon, buttons):
         self.setWindowTitle(title)
         self.setText(text)
 
-        # Set icon
+        # Sets icon:
         match icon:
             case "information":
                 self.setIcon(QMessageBox.Icon.Information)
@@ -19,7 +21,7 @@ class Notifications(QMessageBox):
             case "critical":
                 self.setIcon(QMessageBox.Icon.Critical)
 
-        # Set buttons
+        # Sets buttons:
         if "ok" in buttons:
             self.addButton(QMessageBox.StandardButton.Ok)
         if "cancel" in buttons:
@@ -34,6 +36,8 @@ class Notifications(QMessageBox):
             self.addButton(QMessageBox.StandardButton.Abort)
 
         return self.exec()
+
+    # General types of notification for common questions:
 
     def question_notification(self, element_name):
         return self.new_notification(title="Warning",

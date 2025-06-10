@@ -18,15 +18,21 @@ class RaidManager(QMainWindow):
         super().__init__(parent)
         self.ui = Ui_RAID_Manager()
         self.ui.setupUi(self)
+
+        # The program shows its main window to let the user know that the program is active.
+        # This allows the user to understand that the notifications, in the event that some dependencies are missing, come from the program itself.
+
         self.show()
 
-        # Center window:
+        # Center window before starting:
 
         EventsManager.window_to_center(self)
 
+        # If 'mdadm' and the policy file are installed on the system, the program starts:
+
         if EventsManager.is_installed('mdadm') and EventsManager.has_policy():
 
-            # Declare and initialize objects for windows:
+            # Declares and initializes objects for windows:
 
             new_raid = NewRaid()
             edit = Edit()
@@ -34,7 +40,8 @@ class RaidManager(QMainWindow):
             about = About()
             options = Options()
 
-            # Activate system tray if enabled:
+            # Declares the system tray and activates it if enabled:
+
             tray = Tray()
             options.evaluate_setting(tray)
 
@@ -45,20 +52,28 @@ class RaidManager(QMainWindow):
             self.ui.button3_info.clicked.connect(lambda: EventsManager.new_window(info))
             self.ui.actionAbout.triggered.connect(lambda: EventsManager.new_window(about))
             self.ui.actionOptions.triggered.connect(lambda: EventsManager.new_window(options))
+            self.ui.actionExit.triggered.connect(lambda: EventsManager.close())
 
+            # Alternative way to create instances of the classes without declaring objects:
 
             #self.ui.button1_new.clicked.connect(lambda: EventsManager.create_object(NewRaid().show()))
             #self.ui.button2_edit.clicked.connect(lambda: EventsManager.create_object(Edit().show()))
             #self.ui.button3_info.clicked.connect(lambda: EventsManager.create_object(Info().show()))
             #self.ui.button3_info.clicked.connect(lambda: EventsManager.create_object(About().show()))
 
-            self.ui.actionExit.triggered.connect(lambda: EventsManager.close())
+
+        # Checks if the policy file ins installed. If it is, the program installs 'mdadm'.
 
         elif EventsManager.has_policy():
             EventsManager.install_program('mdadm')
 
+        # Checks if 'mdadm' is installed. If it is, the program installs the policy file.
+
         elif EventsManager.is_installed('mdadm'):
             EventsManager.install_policy()
+
+        # If none is installed, the program installs both:
+
         else:
             EventsManager.install_program('mdadm')
             EventsManager.install_policy()
