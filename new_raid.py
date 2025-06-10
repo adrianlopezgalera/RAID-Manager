@@ -71,7 +71,7 @@ class NewRaid(QWidget):
 
         # Starts the process:
 
-        process = EventsManager.read_output('sudo mdadm --create --verbose --force ' + '/dev/md/'+self.raid_name + ' --name='+self.raid_name + ' --hostname=$hostname  --level=' + self.raid_level + ' --raid-devices=' + str(self.selected_devices.count('\n')) + ' ' + self.selected_devices.replace("\n", " "))
+        process = EventsManager.read_output('sudo mdadm --create --verbose --force ' + '/dev/md/'+self.raid_name + ' --name='+self.raid_name + ' --level=' + self.raid_level + ' --raid-devices=' + str(self.selected_devices.count('\n')) + ' ' + self.selected_devices.replace("\n", " "))
 
         # Reads the output:
 
@@ -79,7 +79,7 @@ class NewRaid(QWidget):
 
         # Used to evaluate new exceptions from 'mdadm':
 
-        #print(response)
+        print(response)
 
         # Flag to evaluate if the creating process should continue. By default, it is 'True'.
 
@@ -105,7 +105,7 @@ class NewRaid(QWidget):
 
                     # Used to evaluate new exceptions from 'mdadm':
 
-                    #print(line)
+                    print(line)
 
                     if line.__contains__("is already in use"):
 
@@ -115,6 +115,7 @@ class NewRaid(QWidget):
 
                         dialog.new_notification(title="Error", text="The entered name (" + self.raid_name + ") is already in use. Please, enter another name", icon="critical", buttons=[])
                         continue_process = False
+                        
 
         elif response.__contains__("ext2fs file system"):
             dialog = Notifications()
@@ -130,7 +131,7 @@ class NewRaid(QWidget):
 
                     # Used to evaluate new exceptions from 'mdadm':
 
-                    # print(line)
+                    print(line)
 
                     if line.__contains__("is already in use"):
                         dialog = Notifications()
@@ -175,7 +176,7 @@ class NewRaid(QWidget):
 
             # Informs the user and aks if restart the system to use the new created RAID:
 
-            user_input = dialog.new_notification(title="Information", text="RAID created correctly. To use the created raid, you must restart the system. Press 'Apply' to restart now or click 'cancel' to restart later.", icon="information",
+            user_input = dialog.new_notification(title="Information", text="RAID created correctly. To use the created raid, you must restart the system. Press 'Apply' to restart now or click 'Cancel' to restart later.", icon="information",
                                     buttons=["apply", "cancel"])
 
             # If the user accepts, the system restarts:

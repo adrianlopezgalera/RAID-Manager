@@ -231,6 +231,7 @@ class EventsManager:
                 # Extracts the data by avoiding conflicting lines:
 
                 if "Value" not in array:
+
                     window.ui.select_raid.addItem(array[array.find('/'): array.find(' metadata')])
 
     # Gets info about an entered RAID:
@@ -238,6 +239,16 @@ class EventsManager:
     @staticmethod
     def get_selected_raid_info(selected_raid):
         return EventsManager.run_command(['sudo', 'mdadm', '--detail', selected_raid], capture_output=True, text=True).stdout
+
+    # Fallback fix to avoid a POSIX format conflict:
+
+    @staticmethod
+    def fix_posix(selected_raid):
+
+        if selected_raid.__contains__(':'):
+            selected_raid = "/dev/md/" + selected_raid[selected_raid.find(':') + 1:]
+
+        return selected_raid
 
     # Exports the selected RAID in the chosen format:
 
@@ -454,16 +465,16 @@ class EventsManager:
                 notification = Notifications()
 
                 if response.__contains__("no change requested"):
-                    notification.new_notification(title="Error", text="The selected_raid already has the selected level", icon="critical", buttons=["ok"])
+                    notification.new_notification(title="Error", text="The selected raid already has the selected level", icon="critical", buttons=["ok"])
 
                 if response.__contains__("Impossible level change requested"):
-                    notification.new_notification(title="Error", text="The selected_raid cannot be changed to the level " + new_level,
+                    notification.new_notification(title="Error", text="The selected raid cannot be changed to the level " + new_level,
                                             icon="critical", buttons=["ok"])
                 if response.__contains__("Need 1 spare to avoid degraded array, and only have 0"):
                     notification.new_notification(title="Error", text="You need 1 spare to avoid degraded array, and only have 0",
                                             icon="critical", buttons=["ok"])
                 if response.__contains__("could not set level"):
-                    notification.new_notification(title="Error", text="The selected_raid could not set level to " + new_level,
+                    notification.new_notification(title="Error", text="The selected raid could not set level to " + new_level,
                                             icon="critical", buttons=["ok"])
                 if response.__contains__("changed to"):
                     notification.new_notification(title="Information",
@@ -534,6 +545,9 @@ class EventsManager:
     @staticmethod
     def add_drive_dialog(window):
         if EventsManager.check_if_selected_raid(window.selected_raid):
+
+            selected_raid = EventsManager.fix_posix(window.get_selected_raid())
+
             dialog = Dialogs()
 
             # Dialog attributes:
@@ -575,7 +589,7 @@ class EventsManager:
 
                         EventsManager.unmount_device(selected_drive)
 
-                        process = EventsManager.read_output('sudo mdadm --manage ' + window.selected_raid + ' --add ' + selected_drive)
+                        process = EventsManager.read_output('sudo mdadm --manage ' + selected_raid + ' --add ' + selected_drive)
 
                         response = process.stderr.readline()
 
@@ -593,7 +607,7 @@ class EventsManager:
 
                         EventsManager.unmount_device(selected_drive)
 
-                        process = EventsManager.read_output('sudo mdadm --manage ' + window.selected_raid + ' --add-spare ' + selected_drive)
+                        process = EventsManager.read_output('sudo mdadm --manage ' + selected_raid + ' --add-spare ' + selected_drive)
 
                         response = process.stderr.readline()
 
@@ -611,6 +625,9 @@ class EventsManager:
     @staticmethod
     def remove_drive_dialog(window):
         if EventsManager.check_if_selected_raid(window.selected_raid):
+
+            selected_raid = EventsManager.fix_posix(window.get_selected_raid())
+
             dialog = Dialogs()
 
             # Dialog attributes:
@@ -647,21 +664,23 @@ class EventsManager:
                 if selected_drive:
 
                     EventsManager.unmount_device(selected_drive)
-                    EventsManager.run_command('sudo mdadm ' + window.selected_raid + ' --fail ' + selected_drive, shell=True)
+                    EventsManager.run_command('sudo mdadm ' + selected_raid + ' --fail ' + selected_drive, shell=True)
                     process = EventsManager.read_output('sudo mdadm ' + window.selected_raid + ' --remove ' + selected_drive)
 
                     response = process.stderr.readline()
 
-                    if response.__contains__("faulty"):
+                    print(response)
+
+                    if response.__contains__("resource busy"):
+                        notification = Notifications()
+                        notification.new_notification(title="Error", text="Device or resource busy. If you have created the RAID in this session, you need to restart your system first. If not, wait for while and try it again",
+                                                icon="critical", buttons=["ok"])
+
+                    if response.__contains__("removed"):
                         notification = Notifications()
                         notification.new_notification(title="Information",
                                                       text="The selected drive (" + selected_drive + ") has been removed from the RAID (" + window.selected_raid + ")",
                                                       icon="information", buttons=["ok"])
-
-                    if response.__contains__("Device or resource busy"):
-                        notification = Notifications()
-                        notification.new_notification(title="Error", text="Device or resource busy. If you have created the RAID in this session, you need to restart your system first.",
-                                                icon="critical", buttons=["ok"])
                 else:
                     notification = Notifications()
                     notification.new_notification(title="Error",
@@ -679,7 +698,7 @@ class EventsManager:
         output = process.stderr.readlines()
 
         for line in output:
-            started_raid += line + "\n"
+            started_raid += line[6:] + "\n"
 
         if started_raid.__eq__('') or started_raid.__contains__("mdadm: No arrays found in config file or automatically"):
             notification = Notifications()
@@ -687,7 +706,7 @@ class EventsManager:
             EventsManager.fill_raid_list(window)
         else:
             notification = Notifications()
-            notification.new_notification(title="Information", text=started_raid[6:], icon="information", buttons=["ok"])
+            notification.new_notification(title="Information", text=started_raid, icon="information", buttons=["ok"])
 
             # Updates the current RAID list:
 
@@ -720,6 +739,8 @@ class EventsManager:
     def delete_dialog(window):
         if EventsManager.check_if_selected_raid((window.get_selected_raid())):
 
+            selected_raid = EventsManager.fix_posix(window.get_selected_raid())
+
             notification = Notifications()
             user_input = notification.new_notification(title="Warning", text="The selected RAID (" + window.get_selected_raid() + ") will be permanently deleted. This action cannot be undone. Are you sure that you want to continue?", icon="warning", buttons=["ok", "cancel"])
 
@@ -747,7 +768,7 @@ class EventsManager:
                                                   icon="critical", buttons=["ok"])
                 else:
                     notification = Notifications()
-                    notification.success_notification(window.get_selected_raid(), "deleted")
+                    notification.success_notification(selected_raid, "deleted")
 
                 # Updates the current RAID list:
 
