@@ -1,0 +1,54 @@
+mdadm: partition table exists on /dev/sda
+mdadm: partition table exists on /dev/sda but will be lost or
+       meaningless after creating array
+mdadm: Note: this array has metadata at the start and
+    may not be suitable as a boot device.  If you plan to
+    store '/boot' on this device please ensure that
+    your boot-loader understands md/v1.x metadata, or use
+    --metadata=0.90
+mdadm: partition table exists on /dev/sdb
+mdadm: partition table exists on /dev/sdb but will be lost or
+       meaningless after creating array
+Continue creating array? 
+Continue creating array? (y/n) y
+mdadm: Defaulting to version 1.2 metadata
+mdadm: array /dev/md0 started.
+
+
+
+______________________
+
+
+
+mdadm: /dev/sda1 appears to contain an ext2fs file system
+       size=3907016704K  mtime=Thu Nov 20 14:45:27 2025
+mdadm: Note: this array has metadata at the start and
+    may not be suitable as a boot device.  If you plan to
+    store '/boot' on this device please ensure that
+    your boot-loader understands md/v1.x metadata, or use
+    --metadata=0.90
+mdadm: /dev/sdb1 appears to contain an ext2fs file system
+       size=3907016704K  mtime=Thu Nov 20 14:46:08 2025
+Continue creating array? 
+Continue creating array? (y/n) y
+mdadm: Defaulting to version 1.2 metadata
+mdadm: array /dev/md0 started.
+
+___
+
+Para guardar configuración de RAID: sudo bash -c 'mdadm --detail /dev/md/0 >> /etc/mdadm/mdadm.conf'
+
+___
+
+Detalles cortos: sudo mdadm --query /dev/md0
+
+
+___
+
+Extraer información del proceso: sudo cat /proc/mdstat
+
+___
+
+Actualizar raid creado en la tabla de particiones del sistema: update-initramfs -u
+
+
